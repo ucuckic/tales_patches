@@ -1,3 +1,7 @@
+# bro??
+
+
+
 ## Destiny DC
 Double arte slots (from the random japanese guy from the dead website that was then posted on gamefaqs)
 
