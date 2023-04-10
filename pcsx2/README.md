@@ -1,21 +1,13 @@
-## Graces F
-Disable Tap-Dash
+## Destiny DC
+Double arte slots (from the random japanese guy from the dead website that was then posted on gamefaqs)
 
-Double arte-slots and fix input buffer (beta)
+Switch narikiri doll arte slot page with triangle in bind menu
 
-## Xillia 1
-Disable Tap-Dash
+## Legendia
+2 player multiplayer
 
-Disable Boss Counter
+60FPS (unlikely to run full speed)
 
-Disable forced auto during links
-
-## Xillia 2
-Disable Tap-Dash
-
-Disable forced auto during links
-
-Disable forced Nova called at debt thresholds
-
-Disable party locks (spooky)
+## Destiny 2
+All difficulties always unlocked
 
