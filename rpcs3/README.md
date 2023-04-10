@@ -1,5 +1,6 @@
 # fuck is this
 https://wiki.rpcs3.net/index.php?title=Help:Game_Patches
+most of these patches were made with undub isos, and thus my PPU hash is different from other versions/regions. if using other versions, consult the former guide on how to get and correct the PPU hash to match your iso version
 
 ## Graces F
 Disable Tap-Dash
