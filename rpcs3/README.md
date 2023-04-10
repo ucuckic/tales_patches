@@ -1,3 +1,6 @@
+# fuck is this
+https://wiki.rpcs3.net/index.php?title=Help:Game_Patches
+
 ## Graces F
 Disable Tap-Dash
 
