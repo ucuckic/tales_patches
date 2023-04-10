@@ -1,0 +1,81 @@
+Version: 1.2
+
+PPU-a7f26bbbcb13fd5f554d0612f490861feec78e8f:
+  "Disable Tap-Dashing":
+    Games:
+      "Tales of Xillia":
+        NPUB31136: [ All ]
+        BLUS31006: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be32, 0x0005bce4, 0x4bfffd8c ] # unconditional branch
+      
+PPU-62b0f370c487523166efb0d4b4a24e627acc3488:
+  "Disable Tap-Dashing":
+    Games:
+      "Tales of Xillia":
+        BLES01815: [ All ]
+        NPEB01310: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be32, 0x0005bce4, 0x4bfffd8c ] # unconditional branch
+
+PPU-a7f26bbbcb13fd5f554d0612f490861feec78e8f:
+  "Disallow boss counter-attack":
+    Games:
+      "Tales of Xillia":
+        NPUB31136: [ All ]
+        BLUS31006: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be32, 0x000bda84, 0x38800000 ] # zero combo cnt
+      - [ be32, 0x000bc860, 0x38800000 ] # zero combo cnt
+      
+PPU-62b0f370c487523166efb0d4b4a24e627acc3488:
+  "Disallow boss counter-attack":
+    Games:
+      "Tales of Xillia":
+        BLES01815: [ All ]
+        NPEB01310: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be32, 0x000bda84, 0x38800000 ] # zero combo cnt
+      - [ be32, 0x000bc860, 0x38800000 ] # zero combo cnt
+
+PPU-a7f26bbbcb13fd5f554d0612f490861feec78e8f:
+  "Retain control while Linked":
+    Games:
+      "Tales of Xillia":
+        NPUB31136: [ All ]
+        BLUS31006: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be64, 0x0004d014, 0x419e0004419a0004 ] # patch two jumps
+ 
+PPU-62b0f370c487523166efb0d4b4a24e627acc3488:
+  "Retain control while Linked":
+    Games:
+      "Tales of Xillia":
+        BLES01815: [ All ]
+        NPEB01310: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be64, 0x0004d014, 0x419e0004419a0004 ] # patch two jumps
