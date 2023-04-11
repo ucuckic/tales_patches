@@ -3,10 +3,46 @@ patch=0,EE,001671B8,word,00000000
 patch=0,EE,001671E4,word,00000000
 patch=0,EE,00167210,word,00000000
 
-//0016714C
-//001671B8
-//001671E4
-//00167210
+//max hp display
 
+//prejump patch size
+patch=1,EE,D02DF1FC,extended,00003AD0 //cond
+patch=1,EE,202DE6B0,extended,24080016
+
+//jump
+
+patch=1,EE,D02DF1FC,extended,00003AD0 //cond
+patch=1,EE,202DE6B4,extended,08020558
+
+
+patch=1,EE,D02DF1FC,extended,00003AD0 //cond
+patch=1,EE,202DE6B8,extended,00000000
+
+//code
+
+//patch=1,EE,E0143AD0,extended,002DF1FC //cond jumpmulti
+
+
+//patch
+patch=1,EE,20081560,extended,24090001
+patch=1,EE,20081564,extended,8E640160
+patch=1,EE,20081568,extended,24A5003B
+patch=1,EE,2008156C,extended,3C170042
+patch=1,EE,20081570,extended,240600C1
+patch=1,EE,20081574,extended,27BDFFFC
+patch=1,EE,20081578,extended,AFA50000
+patch=1,EE,2008157C,extended,0C0B81BC
+patch=1,EE,20081580,extended,00000000
+patch=1,EE,20081584,extended,24090001
+patch=1,EE,20081588,extended,24070004
+patch=1,EE,2008158C,extended,240600B4
+patch=1,EE,20081590,extended,24080016
+patch=1,EE,20081594,extended,8FA50000
+patch=1,EE,20081598,extended,24090001
+patch=1,EE,2008159C,extended,27BD0004
+patch=1,EE,200815A0,extended,8E64021C
+patch=1,EE,200815A4,extended,8C840018
+patch=1,EE,200815A8,extended,24A50008
+patch=1,EE,200815AC,extended,080B79B1
 
 
