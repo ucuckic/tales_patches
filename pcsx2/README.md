@@ -18,3 +18,5 @@ Switch narikiri doll arte slot page with triangle in bind menu
 ## Destiny 2
 All difficulties always unlocked
 
+Display character max hp during battle
+
