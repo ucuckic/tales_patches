@@ -20,3 +20,11 @@ All difficulties always unlocked
 
 Display character max hp during battle
 
+4 Additional arte slots
+
+How to use:
+
+while selecting an arte, press L3 to switch to the second bindable page
+
+during battle, hold triangle and press the arte button to use your second page bindings. (by default the battle menu is rebound to start)
+
