@@ -7,7 +7,7 @@ patch=0,EE,00167210,word,00000000
 
 //prejump patch size
 patch=1,EE,D02DF1FC,extended,00003AD0 //cond
-patch=1,EE,202DE6B0,extended,24080016
+patch=1,EE,202DE6B0,extended,2408000C
 
 //jump
 
@@ -24,28 +24,65 @@ patch=1,EE,202DE6B8,extended,00000000
 
 
 //patch
-patch=1,EE,20081560,extended,24090001
-patch=1,EE,20081564,extended,8E640160
-patch=1,EE,20081568,extended,24A5003B
-patch=1,EE,2008156C,extended,3C170042
-patch=1,EE,20081570,extended,240600C1
-patch=1,EE,20081574,extended,27BDFFFC
-patch=1,EE,20081578,extended,AFA50000
-patch=1,EE,2008157C,extended,0C0B81BC
-patch=1,EE,20081580,extended,00000000
-patch=1,EE,20081584,extended,24090001
-patch=1,EE,20081588,extended,24070004
-patch=1,EE,2008158C,extended,240600B4
-patch=1,EE,20081590,extended,24080016
-patch=1,EE,20081594,extended,8FA50000
-patch=1,EE,20081598,extended,24090001
-patch=1,EE,2008159C,extended,27BD0004
-patch=1,EE,200815A0,extended,8E64021C
-patch=1,EE,200815A4,extended,8C840018
-patch=1,EE,200815A8,extended,24A50008
-patch=1,EE,200815AC,extended,080B79B1
+patch=0,EE,20081560,extended,24090001
+patch=0,EE,20081564,extended,8E640160
+patch=0,EE,20081568,extended,24A50044
+patch=0,EE,2008156C,extended,3C170042
+patch=0,EE,20081570,extended,240600BF
+patch=0,EE,20081574,extended,27BDFFFC
+patch=0,EE,20081578,extended,AFA50000
+patch=0,EE,2008157C,extended,0C0B81BC
+patch=0,EE,20081580,extended,00000000
+patch=0,EE,20081584,extended,24090001
+patch=0,EE,20081588,extended,24070004
+patch=0,EE,2008158C,extended,240600C6
+patch=0,EE,20081590,extended,2408000C
+patch=0,EE,20081594,extended,8FA50000
 
+patch=0,EE,200815A0,extended,8E64021C
+patch=0,EE,200815A4,extended,8C840018
+patch=0,EE,200815A8,extended,24A5FFFB
+patch=0,EE,200815AC,extended,3C017000
+patch=0,EE,200815B0,extended,24090050
+patch=0,EE,200815B4,extended,A0290370
+patch=0,EE,200815B8,extended,24090080
+patch=0,EE,200815BC,extended,A0290371
+patch=0,EE,200815C0,extended,24090050
+patch=0,EE,200815C4,extended,A0290372
+patch=0,EE,200815C8,extended,24090070
+patch=0,EE,200815CC,extended,A0290378
+patch=0,EE,200815D0,extended,240900A8
+patch=0,EE,200815D4,extended,A0290379
+patch=0,EE,200815D8,extended,240900A8
+patch=0,EE,200815DC,extended,A029037A
+patch=0,EE,200815E0,extended,24090001
+patch=0,EE,200815E4,extended,0C0B81BC
 
+patch=0,EE,200815EC,extended,24070004
+patch=0,EE,200815F0,extended,240600C6
+patch=0,EE,200815F4,extended,2408000C
+patch=0,EE,200815F8,extended,8FA50000
+patch=0,EE,200815FC,extended,24090001
+patch=0,EE,20081604,extended,27BD0004
+patch=0,EE,20081608,extended,86640186
+
+patch=0,EE,20081610,extended,24A5001E
+patch=0,EE,20081614,extended,3C017000
+patch=0,EE,20081618,extended,24090070
+patch=0,EE,2008161C,extended,A0290370
+patch=0,EE,20081620,extended,24090030
+patch=0,EE,20081624,extended,A0290371
+patch=0,EE,20081628,extended,24090070
+patch=0,EE,2008162C,extended,A0290372
+patch=0,EE,20081630,extended,24090090
+patch=0,EE,20081634,extended,A0290378
+patch=0,EE,20081638,extended,24090050
+patch=0,EE,2008163C,extended,A0290379
+patch=0,EE,20081640,extended,24090090
+patch=0,EE,20081644,extended,A029037A
+
+patch=0,EE,2008164C,extended,24090001
+patch=0,EE,20081650,extended,080B79B1
 
 
 
@@ -128,8 +165,19 @@ patch=1,EE,2029DBFC,extended,00000000
 
 
 //code
+
+
+//extra bit to handle combo command
+
+patch=0,EE,20080210,extended,846200F1
+patch=0,EE,20080214,extended,28420003
+patch=0,EE,20080218,extended,1C400013
+patch=0,EE,2008021C,extended,00000000
+patch=0,EE,20080220,extended,080200C8
+//-----------------------------------
+
 patch=0,EE,20080250,extended,32420080
-patch=0,EE,20080254,extended,10400004
+patch=0,EE,20080254,extended,1040FFEE
 
 patch=0,EE,2008025C,extended,080A7700
 
@@ -259,6 +307,36 @@ patch=0,EE,20080A88,extended,8FAA0008
 patch=0,EE,20080A8C,extended,23BD000C
 patch=0,EE,20080A94,extended,00441020
 patch=0,EE,20080A98,extended,080A7228
+
+
+
+
+
+//clear the page on artie menu opening to prevent page visualization bug and confusion
+
+//jmp
+
+patch=1,EE,E00267AE,extended,0029BD34 //cond jumpmulti
+patch=1,EE,2029BD3C,extended,080200CC
+patch=1,EE,2029BD40,extended,00000000
+
+//code
+
+patch=0,EE,20080330,extended,23BDFFF4
+patch=0,EE,20080334,extended,AFA80000
+patch=0,EE,20080338,extended,AFA90004
+patch=0,EE,2008033C,extended,AFAA0008
+patch=0,EE,20080340,extended,3C080008
+patch=0,EE,20080344,extended,21080200
+patch=0,EE,20080348,extended,AD000000
+patch=0,EE,2008034C,extended,8FA80000
+patch=0,EE,20080350,extended,8FA90004
+patch=0,EE,20080354,extended,8FAA0008
+patch=0,EE,20080358,extended,23BD000C
+
+patch=0,EE,20080380,extended,0C0A6F90
+patch=0,EE,20080384,extended,24040001
+patch=0,EE,20080388,extended,080A6F51
 
 
 //write patch
@@ -415,7 +493,7 @@ patch=0,EE,20080F4C,extended,8C690008
 patch=0,EE,20080F50,extended,AD090008
 patch=0,EE,20080F54,extended,8C69000C
 patch=0,EE,20080F58,extended,AD09000C
-patch=0,EE,20080F5C,extended,8D090010
+patch=0,EE,20080F5C,extended,8C690010
 patch=0,EE,20080F60,extended,AD090010
 patch=0,EE,20080F64,extended,8C690014
 patch=0,EE,20080F68,extended,AD090014
