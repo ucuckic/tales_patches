@@ -522,3 +522,35 @@ patch=0,EE,20140698,extended,24097680 //save size when writing memcard
 
 
 
+//disable timestops
+
+//spell/action specific stops
+//default value 0x34, unknown what all actions affected
+//known: overlimit - hiougi - spells
+//patch=1,EE,D02CA1F4,extended,00000199 //cond
+//patch=1,EE,202CA1F4,extended,00000000
+
+//enchant
+patch=1,EE,D02CB3A0,extended,00000199 //cond
+patch=1,EE,202CB3A0,extended,00000000
+
+//reimplement timestop for hiougi specifically
+
+//jmp
+
+patch=1,EE,E0020118,extended,002CF5A8 //cond jumpmulti
+patch=1,EE,202CF59C,extended,08020402
+patch=1,EE,202CF5A0,extended,00000000
+
+//code
+patch=0,EE,20081008,extended,24050034
+patch=0,EE,2008100C,extended,A2650199
+
+patch=0,EE,20081014,extended,24050004
+patch=0,EE,20081018,extended,00641824
+patch=0,EE,2008101C,extended,080B3D69
+
+//disable spell limit (fear)
+
+//patch=1,EE,D02D1688,extended,00000059 //cond
+//patch=1,EE,202D1688,extended,00000000

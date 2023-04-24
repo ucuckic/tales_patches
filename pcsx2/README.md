@@ -22,6 +22,11 @@ Display character max hp during battle
 
 4 Additional arte slots
 
+Disable various input-eating timestops
+
+Disable spell activity limitation (one mid/high spell at a time)
+
+
 ### How to use extra artes:
 
 while selecting an arte, press L3 to switch to the second bindable page
