@@ -3,6 +3,20 @@ Version: 1.2
 #tox2
 
 PPU-a7d11f549ba784d539148688ef512a6a1907e63e:
+  "make nova shut the fuck up mostly":
+    Games:
+      "Tales of Xillia 2":
+        NPUB31443: [ All ]
+        BLUS31397: [ All ]
+        BLES01962: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+      - [ be32, 0x00395ac8, 0x7c3de800 ] # cr0,r29,r29 self comparison
+
+PPU-a7d11f549ba784d539148688ef512a6a1907e63e:
   "Disable Party Lock":
     Games:
       "Tales of Xillia 2":
