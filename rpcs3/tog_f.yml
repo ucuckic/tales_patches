@@ -22,8 +22,57 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
     Group: ""
     Notes: ""
     Patch:
+    
+      #more patching of swap clearing
+      #- [ be32, 0x305858, 0x483A838C ]
+      - [calloc, 0x305858, 6] 
+    
+      #- [ be32, 0x6adbe4, 0x7F83D000 ]
+      - [ be32, 0x6adbe4, 0x2f9a0000 ]
+      - [ be32, 0x6adbe8, 0x409E000C ]
+      - [ be32, 0x6adbeC, 0x60000000 ]
+      - [ be32, 0x6adbf0, 0xA34C002E ]
+      - [ be32, 0x6adbf4, 0x7F9A1800 ]
+      - [ be32, 0x6adbf8, 0x60000000 ]
+    
+    # reset the page when initiating a narikiri swap clear
+      - [calloc, 0x305818, 6] 
+      - [ be32, 0x0, 0x3bc00000 ]
+      - [ be32, 0x0, 0x39204093 ]
+      - [ be32, 0x0, 0x1d290256 ]
+      - [ be32, 0x0, 0x3929003e ]
+      - [ be32, 0x0, 0x93c90000 ]
+      - [ be32, 0x0, 0x813f0004 ]
+    
     #read/write issues in interpreter due to invalid permission
     #crash in interpreter due to lack of execute permissions in this memory region, fixed with patched elf
+    
+    
+    #patch narikiri arte slot clearing
+    
+    #how many slots to clear
+      - [ be32, 0x00305870, 0x2f9e0007 ]
+      
+      #value to set on clear
+      - [ be32, 0x00305854, 0x38A0FFFF ]
+    
+    #offset the write position THIS IS THE ARTE SET FUNCTION
+      - [ be32, 0x001C59B8, 0xb3a9fffc ]
+            
+    #arte reset exception removal
+      - [ be32, 0x00305814, 0x60000000 ]
+    
+      #narikiri ow
+      - [ be32, 0x1c5aa0, 0x48000010 ]
+      
+      #narikiri write ow
+      - [ be32, 0x1c5984, 0x480000ac ]
+      
+      #again
+      - [ be32, 0x1c596c, 0x60000000 ]
+      
+      
+      
       #- [ le32, 0x1c5ab0, 0x90804E48 ] #jump to fnc
       - [ le32, 0x1c5ab4, 0x00000060 ]
       - [calloc, 0x1c5ab0, 13] 
@@ -50,11 +99,20 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
       #this memory is technically used for bgm strings but whatever
       #- [ le32, 0x1c5a60, 0x00704E48 ] #jump to fnc
       
-      - [calloc, 0x1c5a60, 28] 
+      - [calloc, 0x1c5a60, 34] 
       - [ le32, 0x0, 0x9340E038 ] #fnc
       - [ le32, 0x0, 0x5602E71C ]
       - [ le32, 0x0, 0x3E00E738 ]
       - [ le32, 0x0, 0x00000060 ]
+      
+        #addendum
+      - [ be32, 0x0, 0x2c1dffff ]
+      - [ be32, 0x0, 0x40820014 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x3ba00000 ]
+      - [ be32, 0x0, 0x48000048 ]
+      - [ be32, 0x0, 0x60000000 ]
+      
       - [ le32, 0x0, 0x00001D2C ]
       - [ le32, 0x0, 0x38008240 ]
       - [ le32, 0x0, 0x00000060 ]
@@ -83,7 +141,7 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
       
       #- [ be32, 0x025378, 0x48686629 ] #bl
       
-      - [calloc, 0x025378, 55] 
+      - [calloc, 0x025378, 56] 
       #this entire function rewritten to determine artie slot based on what direction is currently in the input buffer
       - [ be32, 0x0, 0x81630004 ]
       - [ be32, 0x0, 0x38800100 ]
@@ -133,14 +191,15 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
       - [ be32, 0x0, 0x419e0010 ]
       - [ be32, 0x0, 0xa0690004 ]
       - [ be32, 0x0, 0x78630420 ]
-      - [ be32, 0x0, 0x4e800020 ]
+      #- [ be32, 0x0, 0x4e800020 ]
+      - [ be32, 0x0, 0x4800001C ] #jump to end of calloc section
       - [ be32, 0x0, 0x73874000 ]
       - [ be32, 0x0, 0x4182000c ]
       - [ be32, 0x0, 0x60000000 ]
       - [ be32, 0x0, 0x38630008 ]
       - [ be32, 0x0, 0xa0630004 ]
       - [ be32, 0x0, 0x78630420 ]
-      #- [ be32, 0x6aba7c, 0x4e800020 ]
+      - [ be32, 0x0, 0x60000000 ] #landing pad
       
       
       #shortcut gaming
@@ -292,3 +351,338 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
       - [ be32, 0x0, 0x901f0018 ]
       #- [ be32, 0x6acc44, 0x4e800020 ]
       
+      
+PPU-579f304de30005038ae57bbc922539442104fad6:
+  "double artie slots + fix buffer beta JP":
+    Games:
+      "Tales of Graces":
+        BLJS10093: [ All ]
+    Author: ""
+    Patch Version: 1.0
+    Group: ""
+    Notes: ""
+    Patch:
+    
+      #more patching of swap clearing
+      #make it acknowledge the actual current player when taking off a doll and vice versa
+      #- [ be32, 0x305858, 0x483A838C ]
+      - [calloc, 0x30753C, 6] 
+    
+      #- [ be32, 0x6adbe4, 0x7F83D000 ]
+      - [ be32, 0x6adbe4, 0x2f9a0000 ]
+      - [ be32, 0x6adbe8, 0x409E000C ]
+      - [ be32, 0x6adbeC, 0x60000000 ]
+      - [ be32, 0x6adbf0, 0xA34C002E ]
+      - [ be32, 0x6adbf4, 0x7F9A1800 ]
+      - [ be32, 0x6adbf8, 0x60000000 ]
+      
+      
+      
+      # reset the page when initiating a narikiri swap clear
+      - [calloc, 0x3074fc, 6] 
+      - [ be32, 0x0, 0x3bc00000 ]
+      - [ be32, 0x0, 0x39204093 ]
+      - [ be32, 0x0, 0x1d290256 ]
+      - [ be32, 0x0, 0x3929003e ]
+      - [ be32, 0x0, 0x93c90000 ]
+      - [ be32, 0x0, 0x813f0004 ]
+      
+      #how many slots to clear
+      - [ be32, 0x00307554, 0x2f9e0007 ]
+      
+      #value to set on clear
+      - [ be32, 0x00307538, 0x38A0FFFF ]
+
+      #offset the write position THIS IS THE ARTE SET FUNCTION
+      - [ be32, 0x001c8be4, 0xb3a9fffc ]
+            
+      #arte reset exception removal
+      - [ be32, 0x003074f8, 0x60000000 ]
+
+    
+      #narikiri ow
+      - [ be32, 0x1c8ccc, 0x48000010 ]
+      
+      #narikiri write ow
+      - [ be32, 0x1c8bb0, 0x480000ac ] #sus
+      
+      #again
+      - [ be32, 0x1c8b98, 0x60000000 ]
+      
+      
+      
+      #other stuff
+      #display code
+    
+      - [ le32, 0x1C8CE0, 0x00000060 ]
+      - [calloc, 0x1C8CDC, 12] 
+      
+      
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x93402039 ]
+      - [ le32, 0x0, 0x5602291D ]
+      - [ le32, 0x0, 0x3E002939 ]
+      - [ le32, 0x0, 0x00002981 ]
+      - [ le32, 0x0, 0x0100092C ]
+      - [ le32, 0x0, 0x10008240 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x08006338 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x040063A0 ]
+      - [ le32, 0x0, 0x20046378 ]
+      #- [ le32, 0x0, 0x2000804E ]
+      
+      #end calloc
+      
+      
+      #now patch the page swapping in
+      #this memory is technically used for bgm strings but whatever
+      #- [ le32, 0x1c5a60, 0x00704E48 ] #jump to fnc
+      
+      - [calloc, 0x1C8C8C, 34] 
+      - [ le32, 0x0, 0x9340E038 ] #fnc
+      - [ le32, 0x0, 0x5602E71C ]
+      - [ le32, 0x0, 0x3E00E738 ]
+      - [ le32, 0x0, 0x00000060 ]
+      
+            #addendum
+      - [ be32, 0x0, 0x2c1dffff ]
+      - [ be32, 0x0, 0x40820014 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x3ba00000 ]
+      - [ be32, 0x0, 0x48000048 ]
+      - [ be32, 0x0, 0x60000000 ]
+      
+      - [ le32, 0x0, 0x00001D2C ]
+      - [ le32, 0x0, 0x38008240 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x00000781 ]
+      - [ le32, 0x0, 0x0000082C ]
+      - [ le32, 0x0, 0x18008241 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x00000039 ]
+      - [ le32, 0x0, 0x00000791 ]
+      - [ le32, 0x0, 0x30000048 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x01000039 ]
+      - [ le32, 0x0, 0x00000791 ]
+      - [ le32, 0x0, 0x20000048 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x00000781 ]
+      - [ le32, 0x0, 0x0100082C ]
+      - [ le32, 0x0, 0x0C008240 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x08002939 ]
+      - [ le32, 0x0, 0x0400A9B3 ]
+      - [ le32, 0x0, 0x7800A1EB ]
+      - [ le32, 0x0, 0x90002138 ]
+      - [ le32, 0x0, 0x2000804E ]
+      
+      #end
+    
+      #use my function when loading arties in battle
+      - [calloc, 0x025378, 56] 
+      #this entire function rewritten to determine artie slot based on what direction is currently in the input buffer
+      - [ be32, 0x0, 0x81630004 ]
+      - [ be32, 0x0, 0x38800100 ]
+      - [ be32, 0x0, 0x5489402e ]
+      - [ be32, 0x0, 0x7d29e039 ]
+      - [ be32, 0x0, 0x41820010 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800001 ]
+      - [ be32, 0x0, 0x4800006c ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800400 ]
+      - [ be32, 0x0, 0x5489402e ]
+      - [ be32, 0x0, 0x7d29e039 ]
+      - [ be32, 0x0, 0x41820010 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800002 ]
+      - [ be32, 0x0, 0x4800004c ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800800 ]
+      - [ be32, 0x0, 0x5489402e ]
+      - [ be32, 0x0, 0x7d29e039 ]
+      - [ be32, 0x0, 0x41820010 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800003 ]
+      - [ be32, 0x0, 0x4800002c ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800200 ]
+      - [ be32, 0x0, 0x5489402e ]
+      - [ be32, 0x0, 0x7d29e039 ]
+      - [ be32, 0x0, 0x41820010 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800001 ]
+      - [ be32, 0x0, 0x4800000c ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38800000 ]
+      - [ be32, 0x0, 0x7c890734 ]
+      - [ be32, 0x0, 0x5529083c ]
+      - [ be32, 0x0, 0x7d244b78 ]
+      - [ be32, 0x0, 0x800b0030 ]
+      - [ be32, 0x0, 0x392909f8 ]
+      - [ be32, 0x0, 0x388409f0 ]
+      - [ be32, 0x0, 0x2f800000 ]
+      - [ be32, 0x0, 0x7d2907b4 ]
+      - [ be32, 0x0, 0x7c8407b4 ]
+      - [ be32, 0x0, 0x7d2b4a14 ]
+      - [ be32, 0x0, 0x7c6b2214 ]
+      
+      #narikiri check to disable alt artes during narikiri - should be ok without it now
+      #- [ be32, 0x6aba54, 0x419e0010 ]
+      - [ be32, 0x6aba54, 0x48000010 ]
+      
+      - [ be32, 0x0, 0xa0690004 ]
+      - [ be32, 0x0, 0x78630420 ]
+     # - [ be32, 0x0, 0x4e800020 ]
+      - [ be32, 0x0, 0x4800001C ] #jump to end of calloc section
+      - [ be32, 0x0, 0x73874000 ]
+      - [ be32, 0x0, 0x4182000c ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x38630008 ]
+      - [ be32, 0x0, 0xa0630004 ]
+      - [ be32, 0x0, 0x78630420 ]
+      - [ be32, 0x0, 0x60000000 ] #landing pad
+      
+      
+      #shortcut gaming
+      #calloc does not work on interpreter because of fag code
+      - [calloc, 0x2f7020, 10] 
+      - [ le32, 0x0, 0x93402039 ]
+      - [ le32, 0x0, 0x5602291D ]
+      - [ le32, 0x0, 0x3E002939 ]
+      - [ le32, 0x0, 0x00002981 ]
+      - [ le32, 0x0, 0x0100092C ]
+      - [ le32, 0x0, 0x10008241 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ le32, 0x0, 0x02006338 ]
+      - [ le32, 0x0, 0x00000060 ]
+      - [ be32, 0x0, 0xA0830000 ]
+      
+      
+      #fallback when not using the above calloc, lwz > lhz
+      #- [ be32, 0x2f52d4, 0xA0830000 ]
+      
+      
+      - [ be32, 0x2F7030, 0xA13F0004 ]
+      - [ be32, 0x2F70CC, 0xA09F0000 ]
+      - [ be32, 0x2F75C4, 0xA09F0000 ]
+      - [ be32, 0x2F71D0, 0xA01f0000 ]
+      - [ be32, 0x2F7190, 0xA09f0000 ]
+      - [ be32, 0x2F72F8, 0xA01f0004 ]
+      
+      - [ be32, 0x2DEC10, 0xA0030000 ]
+      
+      - [ be32, 0x2F8230, 0xA0030004 ]
+      
+      
+      - [ be32, 0x2F7BC0, 0xA09F0004 ]
+      - [ be32, 0x2F76E8, 0xA09F0004 ]
+      - [ be32, 0x2F7774, 0xA13F0004 ]
+      - [ be32, 0x2F7B24, 0xA09F0004 ]
+      
+      #partner lwz > lhz
+      - [ be32, 0x21c1c, 0xa11c0004 ]
+      
+      
+      #nop shortcut buffer clearing
+      - [ be32, 0x21cdc, 0x60000000 ]
+      
+      
+      
+      #jump in
+      #- [ be32, 0x1c5c78, 0x484E6108 ]
+      - [ be32, 0x1c8ea8, 0x60000000 ]
+      
+      - [calloc, 0x1c8ea4, 10] 
+      
+      - [ le32, 0x0, 0x93408038 ]
+      - [ le32, 0x0, 0x5602841C ]
+      - [ le32, 0x0, 0x3E008438 ]
+      - [ le32, 0x0, 0x00008480 ]
+      - [ le32, 0x0, 0x0100042C ]
+      - [ be32, 0x0, 0x4182000c ] #beq +0c
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x39290002 ] #add 2
+      - [ be32, 0x0, 0xB0C9000C ]
+      - [ be32, 0x0, 0xB0A90008 ]
+      #- [ le32, 0x6abda8, 0x2000804E ]
+      
+      
+      - [ be32, 0x21c7c, 0xA13C0004 ]
+      
+      #bl
+      #- [ be32, 0x21c6c, 0x4868aee1 ]
+      - [ be32, 0x21c70, 0x60000000 ]
+      - [calloc, 0x21c6c, 13] 
+
+      - [ be32, 0x0, 0x7c000734 ]
+      - [ be32, 0x0, 0x8929006D ]
+      - [ be32, 0x0, 0x1D290184 ]
+      - [ be32, 0x0, 0x3D290011 ]
+      - [ be32, 0x0, 0x3929e400 ]
+      - [ be32, 0x0, 0x7D2907B4 ]
+      - [ be32, 0x0, 0x7D2B4A14 ]
+      
+      #load the input buffer, which will only contain the held button mask with the below patch
+      - [ be32, 0x0, 0x8129000C ]
+      
+      - [ be32, 0x0, 0x71294000 ]
+      - [ be32, 0x0, 0x4082000C ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x3B9C0002 ]
+      - [ be32, 0x0, 0xa13c0000 ]
+      #- [ le32, 0x6ACB80, 0x2000804E ]
+      #end calloc block
+      
+      
+      #second patch
+      #bl
+      #- [ be32, 0x21bec, 0x4868afb1 ]
+      - [ be32, 0x21bf0, 0x60000000 ]
+      - [calloc, 0x21bec, 15] 
+
+      - [ be32, 0x0, 0x7d234b78 ]
+      - [ be32, 0x0, 0x7c000734 ]
+      - [ be32, 0x0, 0x8929006D ]
+      - [ be32, 0x0, 0x1D290184 ]
+      - [ be32, 0x0, 0x3D290011 ]
+      - [ be32, 0x0, 0x3929e400 ]
+      - [ be32, 0x0, 0x7D2907B4 ]
+      - [ be32, 0x0, 0x7D2B4A14 ]
+      
+      #load the input buffer, which will only contain the held button mask with the below patch
+      - [ be32, 0x0, 0x8129000C ]
+      
+      - [ be32, 0x0, 0x71294000 ]
+      - [ be32, 0x0, 0x4082000C ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x3B9C0002 ]
+      - [ be32, 0x0, 0x7c691b78 ]
+      - [ be32, 0x0, 0xA07C0000 ]
+      #- [ be32, 0x6ACBd8, 0x4e800020 ]
+      #end calloc block
+      
+      #lhz
+      - [ be32, 0x21cb8, 0xA17c0004 ]
+      
+      
+    
+      #buffer patch
+      - [calloc, 0x78f7c, 13] 
+      
+      - [ be32, 0x0, 0x813f0004 ]
+      - [ be32, 0x0, 0x390000f0 ]
+      - [ be32, 0x0, 0x5508801e ]
+      - [ be32, 0x0, 0x7d084839 ]
+      - [ be32, 0x0, 0x41820018 ]
+      #- [ be32, 0x0, 0x48000018 ] stick check jump to fix glitch
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x71280100 ]
+      - [ be32, 0x0, 0x4182000c ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x69290100 ]
+      - [ be32, 0x0, 0x60000000 ]
+      - [ be32, 0x0, 0x913f0014 ]
+      - [ be32, 0x0, 0x901f0018 ]
