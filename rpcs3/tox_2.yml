@@ -73,17 +73,4 @@ PPU-a7d11f549ba784d539148688ef512a6a1907e63e:
     Patch:
       - [ be32, 0x00846310, 0x38600002 ]
       - [ be32, 0x00282B2C, 0x3A900001 ]
-      
-      
-      
-PPU-d8bce76d385cc40b4c522a8415b1fd9fca3d06b8:
-  "Disable Tap-Dash":
-    Games:
-      "Tales of Graces":
-        BLUS30903: [ All ]
-    Author: ""
-    Patch Version: 1.0
-    Group: ""
-    Notes: ""
-    Patch:
-      - [ be32, 0x2482c, 0x4800060c ]      
+          
