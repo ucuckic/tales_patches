@@ -5,6 +5,9 @@ youll have to rename the pnach to the correct iso crc which you can view in the 
 
 on QT specifically. on legacy pcsx2 versions do this: https://www.youtube.com/watch?v=lqM3gLumiYs
 
+## Abyss
+Double arte slots (regions besides JP ported by Sora3100)
+
 ## Destiny DC
 Double arte slots (from the random japanese guy from the dead website that was then posted on gamefaqs)
 

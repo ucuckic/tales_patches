@@ -1,5 +1,24 @@
 Version: 1.2
+Anchors:
+  BLUS30903_SFF1: &BLUS30903_SFF1
+      #patch fnc
+      - [ be32, 0x6acc58, 0x7d204b78 ] # r0 < r9
+      - [ be32, 0x6acc5c, 0x3d230001 ] # addis
+      - [ be32, 0x6acc60, 0x70044000 ] # 
+      - [ be32, 0x6acc64, 0x2f840000 ] # 
+      - [ be32, 0x6acc68, 0x409e000C ] # 
+      - [ be32, 0x6acc6C, 0x38800002 ] # 2 byte offset when macrod
+      - [ be32, 0x6acc70, 0x48000008 ] # 
+      - [ be32, 0x6acc74, 0x38800000 ] # 
       
+  BLUS30903_SFF2: &BLUS30903_SFF2
+      #cus fun
+      - [ be32, 0x6acc90, 0x80030004 ]
+      - [ be32, 0x6acc94, 0x60000000 ] #slwi
+      - [ be32, 0x6acc98, 0x7c840214 ]
+      - [ be32, 0x6acc9C, 0x38840ba8 ]
+      - [ be32, 0x6accA0, 0x78830020 ]
+
 PPU-d8bce76d385cc40b4c522a8415b1fd9fca3d06b8:
   "Disable Tap-Dash":
     Games:
@@ -12,8 +31,9 @@ PPU-d8bce76d385cc40b4c522a8415b1fd9fca3d06b8:
     Patch:
       - [ be32, 0x2482c, 0x4800060c ]      
 
+
 PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
-  "double artie slots + fix buffer beta":
+  "double artie slots + fix buffer beta NA":
     Games:
       "Tales of Graces":
         BLUS30903: [ All ]
@@ -23,7 +43,7 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
     Notes: ""
     Patch:
     
-      #more patching of swap clearing
+        #more patching of swap clearing
       #- [ be32, 0x305858, 0x483A838C ]
       - [calloc, 0x305858, 6] 
     
@@ -188,7 +208,10 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
       - [ be32, 0x0, 0x7c8407b4 ]
       - [ be32, 0x0, 0x7d2b4a14 ]
       - [ be32, 0x0, 0x7c6b2214 ]
-      - [ be32, 0x0, 0x419e0010 ]
+      #narikiri check to disable alt artes during narikiri - should be ok without it now
+      #- [ be32, 0x0, 0x419e0010 ]
+      - [ be32, 0x0, 0x48000010 ]
+      
       - [ be32, 0x0, 0xa0690004 ]
       - [ be32, 0x0, 0x78630420 ]
       #- [ be32, 0x0, 0x4e800020 ]
@@ -270,56 +293,60 @@ PPU-3e9032a3f7857057ef783810bd8f34a439baaa59:
       
       - [ be32, 0x21c7c, 0xA13C0004 ]
       
-      #bl
-      #- [ be32, 0x21c6c, 0x4868aee1 ]
-      - [ be32, 0x21c70, 0x60000000 ]
-      - [calloc, 0x21c6c, 13] 
-
-      - [ be32, 0x0, 0x7c000734 ]
-      - [ be32, 0x0, 0x8929006D ]
-      - [ be32, 0x0, 0x1D290184 ]
-      - [ be32, 0x0, 0x3D290011 ]
-      - [ be32, 0x0, 0x3929e400 ]
-      - [ be32, 0x0, 0x7D2907B4 ]
-      - [ be32, 0x0, 0x7D2B4A14 ]
+      - [ be32, 0x21c6c, 0xa13c0000 ] #lw > lhz
+      - [ be32, 0x21bec, 0xa07c0000 ] #lw > lhz
       
-      #load the input buffer, which will only contain the held button mask with the below patch
-      - [ be32, 0x0, 0x8129000C ]
+      - [ be32, 0x21cb8, 0xA17c0004 ]
       
-      - [ be32, 0x0, 0x71294000 ]
-      - [ be32, 0x0, 0x4082000C ]
-      - [ be32, 0x0, 0x60000000 ]
-      - [ be32, 0x0, 0x3B9C0002 ]
-      - [ be32, 0x0, 0xa13c0000 ]
-      #- [ le32, 0x6ACB80, 0x2000804E ]
-      #end calloc block
+      #branches
+      
+      #- [ be32, 0x1c5c88, 0x60000000 ] #nop turns out to be common cannot nop
+      
+      #scut fix gx
+      #- [ be32, 0x21ce4, 0x4868aea5 ] #bl 0x6acb88 patch fun
+      #- [ be32, 0x21c4c, 0x4868af3d ] #bl 0x6acb88
+      #- [ be32, 0x21bc0, 0x4868afc9 ] #bl 0x6acb88
+      #- [ be32, 0x21d0c, 0x4868ae7d ] #bl 0x6acb88
+      
+      - [calloc, 0x21ce4, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      - [calloc, 0x21c4c, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      - [calloc, 0x21bc0, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      - [calloc, 0x21d0c, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      
+      #nomul ver slotget
+      #- [ be32, 0x21cf0, 0x4868afa1 ] #bl 0x6acc90 cus fun
+      #- [ be32, 0x21c58, 0x4868b039 ] #bl 0x6acc90
+      #- [ be32, 0x21bcc, 0x4868b0c5 ] #bl 0x6acc90
+      #- [ be32, 0x21d18, 0x4868af79 ] #bl 0x6acc90
+      - [calloc, 0x21cf0, 5]
+      - [ load, *BLUS30903_SFF2 ]
+      - [calloc, 0x21c58, 5]
+      - [ load, *BLUS30903_SFF2 ]
+      - [calloc, 0x21bcc, 5]
+      - [ load, *BLUS30903_SFF2 ]
+      - [calloc, 0x21d18, 5]
+      - [ load, *BLUS30903_SFF2 ]
       
       
-      #bl
-      #- [ be32, 0x21bec, 0x4868afb1 ]
-      - [ be32, 0x21bf0, 0x60000000 ]
-      - [calloc, 0x21bec, 15] 
-
-      - [ be32, 0x0, 0x7d234b78 ]
-      - [ be32, 0x0, 0x7c000734 ]
-      - [ be32, 0x0, 0x8929006D ]
-      - [ be32, 0x0, 0x1D290184 ]
-      - [ be32, 0x0, 0x3D290011 ]
-      - [ be32, 0x0, 0x3929e400 ]
-      - [ be32, 0x0, 0x7D2907B4 ]
-      - [ be32, 0x0, 0x7D2B4A14 ]
       
-      #load the input buffer, which will only contain the held button mask with the below patch
-      - [ be32, 0x0, 0x8129000C ]
+      - [ be32, 0x21ce8, 0x38840008 ] #li 4,1 > add
+      - [ be32, 0x21c50, 0x38840000 ] #li 4,0 > add
+      - [ be32, 0x21bc4, 0x38840010 ] #li 4,2 > add
+      - [ be32, 0x21d10, 0x38840018 ] #li 4,3 > add
       
-      - [ be32, 0x0, 0x71294000 ]
-      - [ be32, 0x0, 0x4082000C ]
-      - [ be32, 0x0, 0x60000000 ]
-      - [ be32, 0x0, 0x3B9C0002 ]
-      - [ be32, 0x0, 0x7c691b78 ]
-      - [ be32, 0x0, 0xA07C0000 ]
-      #- [ be32, 0x6ACBd8, 0x4e800020 ]
-      #end calloc block
+      
+      #patch fnc
+      #- [calloc, 0x1c5c78, 8]
+      #- [ load, *BLUS30903_SFF1 ]
+      
+      
+      #cus fun
+      #- [calloc, 0x1c5c78, 5]
+      #- [ load, *BLUS30903_SFF2 ]
       
       #lhz
       - [ be32, 0x21cb8, 0xA17c0004 ]
@@ -612,57 +639,60 @@ PPU-579f304de30005038ae57bbc922539442104fad6:
       
       - [ be32, 0x21c7c, 0xA13C0004 ]
       
-      #bl
-      #- [ be32, 0x21c6c, 0x4868aee1 ]
-      - [ be32, 0x21c70, 0x60000000 ]
-      - [calloc, 0x21c6c, 13] 
-
-      - [ be32, 0x0, 0x7c000734 ]
-      - [ be32, 0x0, 0x8929006D ]
-      - [ be32, 0x0, 0x1D290184 ]
-      - [ be32, 0x0, 0x3D290011 ]
-      - [ be32, 0x0, 0x3929e400 ]
-      - [ be32, 0x0, 0x7D2907B4 ]
-      - [ be32, 0x0, 0x7D2B4A14 ]
+      - [ be32, 0x21c6c, 0xa13c0000 ] #lw > lhz
+      - [ be32, 0x21bec, 0xa07c0000 ] #lw > lhz
       
-      #load the input buffer, which will only contain the held button mask with the below patch
-      - [ be32, 0x0, 0x8129000C ]
+      - [ be32, 0x21cb8, 0xA17c0004 ]
       
-      - [ be32, 0x0, 0x71294000 ]
-      - [ be32, 0x0, 0x4082000C ]
-      - [ be32, 0x0, 0x60000000 ]
-      - [ be32, 0x0, 0x3B9C0002 ]
-      - [ be32, 0x0, 0xa13c0000 ]
-      #- [ le32, 0x6ACB80, 0x2000804E ]
-      #end calloc block
+      #branches
+      
+      #- [ be32, 0x1c5c88, 0x60000000 ] #nop turns out to be common cannot nop
+      
+      #scut fix gx
+      #- [ be32, 0x21ce4, 0x4868aea5 ] #bl 0x6acb88 patch fun
+      #- [ be32, 0x21c4c, 0x4868af3d ] #bl 0x6acb88
+      #- [ be32, 0x21bc0, 0x4868afc9 ] #bl 0x6acb88
+      #- [ be32, 0x21d0c, 0x4868ae7d ] #bl 0x6acb88
+      
+      - [calloc, 0x21ce4, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      - [calloc, 0x21c4c, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      - [calloc, 0x21bc0, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      - [calloc, 0x21d0c, 8]
+      - [ load, *BLUS30903_SFF1 ]
+      
+      #nomul ver slotget
+      #- [ be32, 0x21cf0, 0x4868afa1 ] #bl 0x6acc90 cus fun
+      #- [ be32, 0x21c58, 0x4868b039 ] #bl 0x6acc90
+      #- [ be32, 0x21bcc, 0x4868b0c5 ] #bl 0x6acc90
+      #- [ be32, 0x21d18, 0x4868af79 ] #bl 0x6acc90
+      - [calloc, 0x21cf0, 5]
+      - [ load, *BLUS30903_SFF2 ]
+      - [calloc, 0x21c58, 5]
+      - [ load, *BLUS30903_SFF2 ]
+      - [calloc, 0x21bcc, 5]
+      - [ load, *BLUS30903_SFF2 ]
+      - [calloc, 0x21d18, 5]
+      - [ load, *BLUS30903_SFF2 ]
       
       
-      #second patch
-      #bl
-      #- [ be32, 0x21bec, 0x4868afb1 ]
-      - [ be32, 0x21bf0, 0x60000000 ]
-      - [calloc, 0x21bec, 15] 
-
-      - [ be32, 0x0, 0x7d234b78 ]
-      - [ be32, 0x0, 0x7c000734 ]
-      - [ be32, 0x0, 0x8929006D ]
-      - [ be32, 0x0, 0x1D290184 ]
-      - [ be32, 0x0, 0x3D290011 ]
-      - [ be32, 0x0, 0x3929e400 ]
-      - [ be32, 0x0, 0x7D2907B4 ]
-      - [ be32, 0x0, 0x7D2B4A14 ]
       
-      #load the input buffer, which will only contain the held button mask with the below patch
-      - [ be32, 0x0, 0x8129000C ]
+      - [ be32, 0x21ce8, 0x38840008 ] #li 4,1 > add
+      - [ be32, 0x21c50, 0x38840000 ] #li 4,0 > add
+      - [ be32, 0x21bc4, 0x38840010 ] #li 4,2 > add
+      - [ be32, 0x21d10, 0x38840018 ] #li 4,3 > add
       
-      - [ be32, 0x0, 0x71294000 ]
-      - [ be32, 0x0, 0x4082000C ]
-      - [ be32, 0x0, 0x60000000 ]
-      - [ be32, 0x0, 0x3B9C0002 ]
-      - [ be32, 0x0, 0x7c691b78 ]
-      - [ be32, 0x0, 0xA07C0000 ]
-      #- [ be32, 0x6ACBd8, 0x4e800020 ]
-      #end calloc block
+      
+      #patch fnc
+      #- [calloc, 0x1c5c78, 8]
+      #- [ load, *BLUS30903_SFF1 ]
+      
+      
+      #cus fun
+      #- [calloc, 0x1c5c78, 5]
+      #- [ load, *BLUS30903_SFF2 ]
       
       #lhz
       - [ be32, 0x21cb8, 0xA17c0004 ]
