@@ -17,7 +17,7 @@ patch=1,EE,2008151C,extended,0013982B //set according to result (delay slot)
 patch=1,EE,20081520,extended,3A730001 //flip if narikiri on
 
 patch=1,EE,20081524,extended,080F8E15 //jump back
-patch=1,EE,20081528,extended,0000A825 //restore s6 (delay slot)
+patch=1,EE,20081528,extended,0000A825 //restore s5 (delay slot)
 patch=1,EE,203E3858,extended,00000000 //disable narikiri check
 
 
