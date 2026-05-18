@@ -7,6 +7,9 @@ without using a fork with this feature, any cheats here that utilize it WILL lik
 
 ## Phantasia X
 Multiplayer
+
 Always unlock Mania
+
 Cancel dash brake (with dash attacks if possible)
+
 Replace Suzu Dash UP attack with BIG JUMPY
