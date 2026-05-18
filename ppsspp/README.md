@@ -5,6 +5,9 @@ without using a fork with this feature, any cheats here that utilize it WILL lik
 
 [PPSSPP local multiplayer build](https://github.com/Armonte/ppsspp-tales-mp)
 
+# Make sure to enable:
+![dark orb](../img/PPSSPPDebug64_2026-05-18_00-26-45.png)
+
 ## Phantasia X
 Multiplayer
 
