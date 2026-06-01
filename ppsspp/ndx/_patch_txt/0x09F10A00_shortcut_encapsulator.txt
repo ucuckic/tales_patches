@@ -1,0 +1,37 @@
+address: 0x09F10A00
+
+		addiu	sp,sp,-0x20
+		
+		sw	s5,0x0(sp) //loop reg
+		sw	s6,0x04(sp)
+		sw	s7,0x08(sp)
+		sw	ra,0x1C(sp)
+		
+		li s5,0x0
+		
+loop_start:
+		
+		lui t0,0x81e
+		sb s5,0x4(t0) //store for later use in fnc
+
+		jal	z_un_08866f78 //shortcut update code call
+		move	a0,s0
+		
+		addi s5,s5,0x1 //increment
+		
+		lb t0,0x5f4(s1) //number of allies
+		slt t0,s5,t0
+		
+		bne t0,zero,loop_start
+		nop
+		
+return:
+		lui t0,0x81e
+		sb zero,0x4(t0) //clear
+		
+		lw	s5,0x0(sp)
+		lw	s6,0x04(sp)
+		lw	s7,0x08(sp)
+		lw	ra,0x1C(sp)
+		jr ra
+		addiu	sp,sp,0x20

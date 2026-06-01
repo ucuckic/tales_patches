@@ -1,0 +1,338 @@
+address: 0x09F10000
+
+fnc_start:
+		addiu	sp,sp,-0x34
+		sw	s0,0x8(sp)
+		sw	s1,0xC(sp)
+		sw	s2,0x10(sp)
+		sw	s3,0x14(sp)
+		sw	s4,0x18(sp)
+		sw	s5,0x1C(sp)
+		sw	s6,0x20(sp)
+		sw	s7,0x24(sp)
+		sw	ra,0x2C(sp)
+		sw	fp,0x30(sp)
+		
+		//required setup for later in the function
+		lui	s5,0x8B3
+		addiu	s5,s5,-0x5EB0
+		
+		move	s1,a0 //should be the main ptr
+		move	fp,a1 //should be the main ptr
+		nop
+		lui	t9,0x81E //our storage
+		li	t3,0x08AF30C8 //unk
+		addiu t3,t3,0x4 //actual party offset?
+		
+		li	s2,0x0 //loop counter init
+		lb t0,0x5f4(s1) //load the number of allies
+		
+		addiu t2,s1,0x105c //in battle copy of party array
+		
+loop_start:
+		add t4,s2,t9 //add our offset to get our control byte (storage + loop index)
+		lb t4,0x30(t4) //load control byte
+		
+		move a0,t4
+		
+		//latter is technically redundant even if it has """error handling""" so just skip it and use the value directly
+		
+		//jal 0x09F00D00 //get the char from slot (get our controlled char for this player index)
+		//move a0,t4
+		//lb a0,0x5(v0) //char slot id, use this to look up where to read from in the party array copy
+		
+		sll a0,a0,0x2
+		add a0,t2,a0
+		
+		lhu	t6,0x0(a0)
+		lhu	t7,0x2(a0)
+		
+		sll	t6,t6,0x10
+		sra	t6,t6,0x10
+		sll	t7,t7,0x10
+		sra	t7,t7,0x10
+		
+		sll t5,s2,0x2
+		add t5,t3,t5
+		
+		sh	t6,0x0(t5)
+		sh	t7,0x2(t5)
+
+		addi s2,s2,0x1 //increment loop counter
+loop_jump:
+		slt t1,s2,t0
+		bne t1,zero,loop_start
+		nop
+		
+		//set these up before going back to original function code
+		lui	s2,0x8B0
+		move	s4,s2
+		
+		
+		
+
+	beq	fp,zero,label_1
+	sw	fp,0x4(sp)
+	lbu	a0,0x5F4(s1)
+	li	a1,0x0
+	slt	a0,a1,a0
+	beq	a0,zero,label_1
+	move	a0,s1
+
+label_3:
+
+	lw	a2,0xFC0(a0)
+	beql	a2,zero,label_2
+	lbu	a2,0x5F4(s1)
+	lb	a2,0x7D(a2)
+	sll	a2,a2,0x18
+	sra	a2,a2,0x18
+	sh	a2,0x69C8(s2)
+	lbu	a2,0x5F4(s1)
+
+label_2:
+
+	addiu	a1,a1,0x1
+	addiu	a0,a0,0x4
+	slt	a2,a1,a2
+	bne	a2,zero,label_3
+	addiu	s2,s2,0x2
+
+label_1:
+
+	//except this
+
+	//the old control mode update
+	/*
+	jal	z_un_0880e568
+	move	a0,s1
+	lb	a0,0x35(v0)
+	lui	a1,0x8B0
+	sb	a0,0x69C4(a1)
+	*/
+	
+	//the new BASED control mode update
+	
+	//should this ever realistically do anything?
+updateCtrlModeFnc:
+		lui	a1,0x8B0
+		addi	t0,a1,0x69C4 //party control modes
+		li	t1,0x0 //loop cnt
+		lb	t3,0x5F4(s1)
+		
+updateCtrlModeS:
+		slt	t7,t1,t3
+		beq	t7,zero,updateCtrlModeE_1
+		nop	
+		jal	0x09F00D00 //get char
+		move a0,t1 //by loop index
+
+		beq	v0,zero,updateCtrlModeE_2
+		nop	
+		
+		//what are these
+		
+		/*
+		lbu	t5,0x5(v0)
+		sll	t2,t5,0x2
+		add	t4,t3,t2
+		add	t4,t4,s1
+		lw	t5,0x0(t4)
+		add	t8,t1,t0
+		*/
+		
+		
+		add t8,t1,t0
+		
+		lb	t5,0x35(v0)
+		sb	t5,0x0(t8)
+		
+		b	updateCtrlModeS
+
+updateCtrlModeE_1:
+		addi	t1,t1,0x1
+		
+updateCtrlModeE_2:
+		nop
+	
+
+//regular function past here
+	jal	z_un_088326e0
+	move	a0,s5
+	slti	a0,v0,0x5
+	beql	a0,zero,label_4
+	lbu	s2,0x5FA(s1)
+	jal	z_un_088326e0
+	move	a0,s5
+	lui	a0,0x8B0
+	sb	v0,0x7A8D(a0)
+	lbu	s2,0x5FA(s1)
+
+label_4:
+
+	bne	s2,s7,label_5
+	xori	s2,s2,0x1
+	lbu	a0,0x5FB(s1)
+	xori	s2,a0,0x1
+	b	label_6
+	andi	s2,s2,0xFF
+
+label_5:
+
+	andi	s2,s2,0xFF
+
+label_6:
+
+	lui	a0,0x8B0
+	sb	s2,0x7601(a0)
+	lbu	s2,0x5F6(s1)
+	lbu	a0,0x5F4(s1)
+	addu	a0,s2,a0
+	slt	a0,s2,a0
+	beq	a0,zero,fnc_end
+	sll	s0,s2,0x2
+	lui	fp,0xFF80
+	lui	s7,0xFE00
+	lui	s6,0x8AF
+	addu	s0,s1,s0
+	addiu	fp,fp,-0x1
+	addiu	s7,s7,-0x1
+	addiu	s6,s6,-0x4780
+	lui	s5,0x80
+	lui	s4,0x200
+
+label_7:
+
+	lw	a1,0xFC0(s0)
+	beql	a1,zero,label_8
+	lbu	a0,0x5F6(s1)
+	lw	a0,0x260(a1)
+	beql	a0,zero,label_8
+	lbu	a0,0x5F6(s1)
+	lwc1	f12,0x670(a1)
+	trunc.w.s	f12,f12
+	mfc1	a1,f12
+	sh	a1,0x24(a0)
+	lw	a0,0xFC0(s0)
+	lwc1	f13,0x664(a0)
+	lw	a0,0x260(a0)
+	trunc.w.s	f13,f13
+	mfc1	a1,f13
+	sh	a1,0x2A(a0)
+	lw	a0,0xFC0(s0)
+	lw	a0,0x260(a0)
+	sw	zero,0x18(a0)
+	lw	a1,0xFC0(s0)
+	lb	a0,0x58(a1)
+	beq	a0,zero,label_9
+	li	a2,0x2
+	beq	a0,a2,label_10
+	li	a2,0x3
+	beq	a0,a2,label_10
+	li	a2,0x4
+	beq	a0,a2,label_10
+	li	a2,0x5
+	beq	a0,a2,label_10
+	li	a2,0x6
+	beq	a0,a2,label_10
+	li	a2,0x7
+	bnel	a0,a2,label_11
+	lw	a0,0x4(sp)
+
+label_10:
+
+	addiu	a0,a0,-0x1
+	lw	a1,0x260(a1)
+	sllv	a0,s3,a0
+	sw	a0,0x18(a1)
+
+label_9:
+
+	lw	a0,0x4(sp)
+
+label_11:
+
+	bnel	a0,zero,label_8
+	lbu	a0,0x5F6(s1)
+	lw	a3,0xFC0(s0)
+	lw	a0,0x260(a3)
+	lb	a2,0x59(a3)
+	beq	a2,zero,label_12
+	lw	a1,0x18(a0)
+	li	t0,0xE
+	bne	a2,t0,label_12
+	addiu	a2,a2,-0x1
+	sllv	a2,s3,a2
+	or	a1,a1,a2
+	sw	a1,0x18(a0)
+	lw	a3,0xFC0(s0)
+	lw	a0,0x260(a3)
+	lw	a1,0x18(a0)
+
+label_12:
+
+	lb	a2,0x69(a3)
+	beq	a2,zero,label_13
+	lui	a2,0x4000
+	or	a1,a1,a2
+	sw	a1,0x18(a0)
+	lw	a0,0xFC0(s0)
+	lw	a0,0x260(a0)
+	lw	a1,0x18(a0)
+
+label_13:
+
+	and	a1,a1,fp
+	sw	a1,0x18(a0)
+	lw	a0,0xFC0(s0)
+	lw	a0,0x260(a0)
+	lw	a1,0x18(a0)
+	and	a1,a1,s7
+	sw	a1,0x18(a0)
+	lw	a0,0xFC0(s0)
+	lb	a1,0x69(a0)
+	beql	a1,zero,label_8
+	lbu	a0,0x5F6(s1)
+	lbu	a1,0x5(a0)
+	move	a0,s6
+	li	a2,0x198
+	jal	pos_088704B8
+	move	a3,sp
+	beql	v0,zero,label_8
+	lbu	a0,0x5F6(s1)
+	lw	a0,0xFC0(s0)
+	lw	a0,0x260(a0)
+	lw	a1,0x18(a0)
+	or	a1,a1,s5
+	sw	a1,0x18(a0)
+	lw	a0,0xFC0(s0)
+	lw	a0,0x260(a0)
+	lw	a1,0x18(a0)
+	or	a1,a1,s4
+	sw	a1,0x18(a0)
+	lbu	a0,0x5F6(s1)
+
+label_8:
+
+	lbu	a1,0x5F4(s1)
+	addiu	s2,s2,0x1
+	addu	a0,a0,a1
+	slt	a0,s2,a0
+	bne	a0,zero,label_7
+	addiu	s0,s0,0x4
+
+
+fnc_end:
+		lw	s0,0x8(sp)
+		lw	s1,0xC(sp)
+		lw	s2,0x10(sp)
+		lw	s3,0x14(sp)
+		lw	s4,0x18(sp)
+		lw	s5,0x1C(sp)
+		lw	s6,0x20(sp)
+		lw	s7,0x24(sp)
+		nop	
+		lw	ra,0x2C(sp)
+		lw	fp,0x30(sp)
+		jr	ra
+		addiu sp,sp,0x34

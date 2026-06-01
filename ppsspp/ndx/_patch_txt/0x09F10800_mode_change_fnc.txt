@@ -1,0 +1,123 @@
+address: 0x09F10800
+
+	addiu	sp,sp,-0x20
+	//lb	a1,0x601(a0)
+	sw	s0,0x0(sp)
+	sw	s1,0x4(sp)
+	sw	s2,0x8(sp)
+	sw	s3,0xC(sp) //lets save the char pointer here just cause
+	sw	ra,0x10(sp)
+	sw  s4,0x14(sp) //player index (arg0)
+	
+	move s4,a0 //player index backed just in case
+	
+	lui t0,0x81e
+	add t0,t0,s4
+	lb t0,0x20(t0) //mode timer addr
+	
+	beq	t0,zero,timer_refresh
+	nop
+	
+	//move	s0,a0
+	
+	li s0,0x08AF1F30 //fuck it directly load main pointer
+	
+	
+	jal	0x09F00D00 //get char data (should still be in arg reg)
+	nop
+	move s3,v0
+	
+	lb	s2,0x35(v0)
+	move a0,s2
+	
+	addiu	a0,a0,0x1
+	sll	s1,a0,0x18
+	sra	s1,s1,0x18
+	slti	a0,s1,0x3
+	beql	a0,zero,label_2
+	li	s1,0x0
+
+label_2:
+
+	bne	s1,zero,label_3
+	nop	
+	lb	a0,0x627(s0)
+	sltu	a0,zero,a0
+	andi	a0,a0,0xFF
+	beq	a0,zero,label_3
+	nop	
+	li	s1,0x1
+
+label_3:
+
+	sb	s1,0x35(v0)
+	lb	a0,0x35(v0)
+	lui	a1,0x8B0
+	bne	s2,zero,label_4
+	sb	a0,0x69C4(a1)
+	lb	a0,0x35(v0)
+	beq	a0,zero,label_5
+	nop	
+	lb	a0,0x533(v0)
+	beq	a0,zero,label_5
+	nop	
+	lb	a0,0x539(v0)
+	li	a1,0x3
+	beq	a0,a1,label_5
+	nop	
+	lb	a0,0x541(v0)
+	bnel	a0,zero,label_6
+	lbu	a0,0x5FA(s0)
+	lb	s1,0x31(v0)
+	sb	s1,0x32(v0)
+	lb	s1,0x33(v0)
+	sb	s1,0x31(v0)
+	lbu	a0,0x5FA(s0)
+
+label_6:
+
+	li	a1,0x2
+	beq	a0,a1,label_4
+	li	a1,0x2
+	sb	a0,0x5FB(s0)
+	b	label_4
+	sb	a1,0x5FA(s0)
+
+label_5:
+
+	lb	a0,0x35(v0)
+	beq	a0,zero,label_4
+	nop	
+	lb	s1,0x33(v0)
+	sb	s1,0x31(v0)
+
+label_4:
+
+	lb	a0,0x35(v0)
+	bne	a0,zero,label_7
+	li	s1,0x1
+	b	timer_refresh
+	sb	s1,0x7A8(v0)
+
+label_7:
+
+	sb	zero,0x7A8(v0)
+
+timer_refresh:
+
+	li	t3,0x3C //0x3c frames of mode display time
+	lui t0,0x81e
+	
+	add t0,t0,s4
+	
+	sb t3,0x20(t0)
+	
+end:
+	lw	s0,0x0(sp)
+	lw	s1,0x4(sp)
+	lw	s2,0x8(sp)
+	lw	s3,0xC(sp)
+	lw	ra,0x10(sp)
+	lw	s4,0x14(sp)
+	jr	ra
+	addiu	sp,sp,0x20

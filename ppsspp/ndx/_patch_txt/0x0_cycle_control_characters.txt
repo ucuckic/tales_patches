@@ -1,0 +1,291 @@
+z_un_08820fa4:
+
+	addiu	sp,sp,-0x30
+	sw	s0,0x4(sp)
+	move	s0,a0
+	sw	s1,0x8(sp)
+	sw	s2,0xC(sp)
+	sw	s3,0x10(sp)
+	sw	s4,0x14(sp)
+	sw	s5,0x18(sp)
+	sw	s6,0x1C(sp)
+	sw	s7,0x20(sp)
+	
+	li	s2,0x4
+	li	s3,0x5
+	li	s4,0x6
+	li	s5,0x7
+	li	s6,0x8
+	li	s7,0x9
+	
+	addiu	a0,s1,0x1
+	lbu	a1,0x5F4(s0)
+	sw	fp,0x24(sp)
+	sw	ra,0x28(sp)
+	
+	lui	s1,0x8B0
+	addi	s1,s1,0x69C4 //party control modes
+	
+
+
+loop_entry:
+
+	/*
+	sb	a0,0x5F8(s0)
+	lb	a0,0x5F8(s0)
+	slt	a1,a0,a1
+	bne	a1,zero,label_08821014
+	nop	
+	sb	zero,0x5F8(s0)
+	lb	a0,0x5F8(s0)
+	*/
+	
+	lui t0,0x81e
+	
+	lb t1,0x30(t0)
+	sb t1,0x40(t0) //temp copy
+	
+	lb t1,0x31(t0)
+	sb t1,0x41(t0) //temp copy
+	
+	lb t1,0x32(t0)
+	sb t1,0x42(t0) //temp copy
+	
+	lb t1,0x33(t0)
+	sb t1,0x43(t0) //temp copy
+	
+	//loop reg
+	li s6,0x0
+	move s7,a1 //ally cnt
+	
+
+label_08821014:
+
+	//legit have no idea what this does
+	/*
+	jal	z_un_088105f8
+	lhu	a1,0xA4(a1)
+	lb	a2,0x66C(s0)
+	*/
+	
+	//dont process party pos swap for a party of only one character
+	slti t0,s7,0x2
+	bne t0,zero,return
+	nop
+
+loop:
+
+	lui t0,0x81e
+	addi t5,t0,0x30 //char control array
+	addi t6,t0,0x40 //backed up control array
+	
+	move t1,s6 //loop index
+
+	//might be needed for later expansion
+	jal	0x09F00D00 //get pre update char
+	move a0,s6 //by loop index
+	move s3,v0 //store the pre update char
+	
+	
+	//player 0 needs to set his index to the back
+	addi t2,s7,-0x1 //back of party
+	slt t2,s6,t2
+	beq t2,zero,p0_before
+	nop
+	
+	addi t1,t1,0x1
+	
+	//load one slot forward from index
+	add t2,t1,t6 //backed up array + index
+	lb t3,0x0(t2)
+	
+	//paste to index
+	add t2,s6,t5 //backed array + index
+	sb t3,0x0(t2)
+	
+	move t2,s6
+	
+	b p0_after
+	nop
+	
+p0_before:
+	lb t3,0x0(t6)
+	addi t1,s7,-0x1 //back of party
+	
+	add t2,t1,t5 //array + index
+	sb t3,0x0(t2)
+	move t2,t1
+	
+
+p0_after:
+	
+	//might be needed for later expansion
+	jal	0x09F00D00 //get post update char
+	move a0,t2 //by loop index
+	move s4,v0 //store the post update char
+	
+	//param updates
+	
+	//perform a manual sync to menu to ensure player slots keep ctrl modes
+	add a0,t2,s1
+	lb t3,0x0(a0) //slot1
+	sb t3,0x35(s4)
+	
+	
+	//add v0,t1,s1
+	//lb t4,0x0(v0) //changeslot
+	
+	//cmode swap
+	//sb t3,0x35(v0)
+	//sb t4,0x35(a0)
+	
+	addiu	s6,s6,0x1
+	
+	slt t1,s6,s7
+	bne	t1,zero,loop
+
+loop_end:
+
+/*
+	beq	a0,s1,return
+	sll	a0,s1,0x2
+	addu	s2,s0,a0
+	lw	a0,0xFC0(s2)
+	lb	s1,0x33(a0)
+	lb	s3,0x35(a0)
+	lbu	s4,0x7A8(a0)
+	lbu	s5,0x7A9(a0)
+	lw	s6,0x20C(a0)
+	lw	s7,0x210(a0)
+	lw	fp,0x214(a0)
+	sw	fp,0x0(sp)
+	lw	fp,0x218(a0)
+	
+	jal	z_un_0880e568
+	move	a0,s0
+	
+	lb	a1,0x33(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sb	a1,0x33(a2)
+	lb	a1,0x35(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sb	a1,0x35(a2)
+	lbu	a1,0x7A8(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sb	a1,0x7A8(a2)
+	lbu	a1,0x7A9(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sb	a1,0x7A9(a2)
+	lw	a1,0x20C(v0)
+	lw	a2,0xFC0(s2)
+	
+	sw	a1,0x20C(a2)
+	lw	a1,0x210(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sw	a1,0x210(a2)
+	lw	a1,0x214(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sw	a1,0x214(a2)
+	lw	a1,0x218(v0)
+	lw	a2,0xFC0(s2)
+	
+	
+	sw	a1,0x218(a2)
+	sb	s1,0x33(v0)
+	
+	
+	sb	s3,0x35(v0)
+	
+	
+	sb	s4,0x7A8(v0)
+	
+	
+	sb	s5,0x7A9(v0)
+	
+	
+	sw	s6,0x20C(v0)
+	
+	
+	sw	s7,0x210(v0)
+	
+	
+	lw	a0,0x0(sp)
+	sw	a0,0x214(v0)
+	
+	
+	sw	fp,0x218(v0)
+	
+	
+	lb	a0,0x35(v0)
+	beq	a0,zero,update_status
+	move	a0,s0
+	
+	lb	a0,0x533(v0)
+	beq	a0,zero,label_08821234
+	nop	
+	
+	
+	lb	a0,0x541(v0)
+	bnel	a0,zero,label_0882121C
+	lbu	a0,0x5FA(s0)
+	
+	lb	s2,0x31(v0)
+	
+	
+	sb	s2,0x32(v0)
+	
+	sb	s1,0x31(v0)
+	lbu	a0,0x5FA(s0)
+
+label_0882121C:
+
+	li	a1,0x2
+	beq	a0,a1,label_08821240
+	li	a1,0x2
+	sb	a0,0x5FB(s0)
+	b	label_08821240
+	sb	a1,0x5FA(s0)
+
+label_08821234:
+
+	sb	s1,0x31(v0)
+
+label_08821240:
+
+	move	a0,s0
+*/
+
+update_status:
+
+	move	a0,s0
+	jal	z_un_08817630
+	li	a1,0x0
+
+return:
+
+	lw	s0,0x4(sp)
+	lw	s1,0x8(sp)
+	lw	s2,0xC(sp)
+	lw	s3,0x10(sp)
+	lw	s4,0x14(sp)
+	lw	s5,0x18(sp)
+	lw	s6,0x1C(sp)
+	lw	s7,0x20(sp)
+	lw	fp,0x24(sp)
+	lw	ra,0x28(sp)
+	jr	ra
+	addiu	sp,sp,0x30
+
+//past this will be original function code, but that code should never be reachable

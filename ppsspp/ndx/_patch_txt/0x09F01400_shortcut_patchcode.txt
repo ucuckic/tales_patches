@@ -1,0 +1,42 @@
+address: 0x09F01400
+	addiu	sp,sp,-0x4
+	sw	ra,0x0(sp)
+	
+	lbu	t1,0x5(s0)
+	lbu	t3,0x5F4(a0)
+	addiu	t3,t3,-0x1
+	slt	t0,t3,t1
+	bne	t0,zero,return
+	nop
+	li	v0,0x0
+	
+	//get our controlling char id
+	li t0,0x81e0030
+	
+	add t0,s5,t0 //add loop index to get player
+	lb t0,0x0(t0)
+	bne t0,t1,return //skip on char mismatch
+	nop
+	
+	/*
+	lui	t2,0x830
+	addiu	t2,t2,-0xB60
+	addiu	t2,t2,-0x400 //oops offset for index
+	
+	sll	t3,s5,0xA //mul by player index
+	addu	t3,t3,t2
+	lw	v0,0x84(t3) //load analog push val
+	*/
+	
+	//j	return
+	//nop	
+
+player_0:
+	jal	z_un_08812898 //original function (analog setting aware button get)
+	move a0,s2	
+
+return:
+	
+	lw	ra,0x0(sp)
+	jr	ra
+	addiu	sp,sp,0x4

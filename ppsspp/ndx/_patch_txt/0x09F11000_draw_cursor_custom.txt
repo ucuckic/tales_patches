@@ -1,0 +1,421 @@
+
+address: 0x09F11000
+
+	addiu	sp,sp,-0x40
+	li	a1,0x08AEDD00
+	lbu	a1,0x4012(a1)
+	sw	s2,0x38(sp)
+	li	s2,0x1
+	swc1	f20,0x28(sp)
+	swc1	f22,0x2C(sp)
+	sw	s0,0x30(sp)
+	sw	s1,0x34(sp)
+	sw	ra,0x3C(sp)
+	beq	a1,zero,label_08880990
+	move	s0,a0
+	lui	a0,0x8B3
+	lw	a1,-0x5B70(a0)
+	sll	a1,a1,0x18
+	sra	a1,a1,0x18
+	beq	a1,zero,label_08880990
+	addiu	s1,a0,-0x5B70
+	mtc1	zero,f20
+	lw	a0,0xB8(s1)
+	swc1	f20,0x1C(sp)
+	addiu	a0,a0,0x2B4
+	lw	a1,0x1C(a0)
+	lh	a1,0x4E(a1)
+	subu	a1,zero,a1
+	mtc1	a1,f12
+	cvt.s.w	f12,f12
+	lui	a1,0x41A0
+	mtc1	a1,f14
+	swc1	f12,0x20(sp)
+	lw	a0,0x1C(a0)
+	lh	a0,0x52(a0)
+	sra	a2,a0,0x1
+	srl	a2,a2,0x1F
+	addu	a0,a0,a2
+	sra	a0,a0,0x1
+	mtc1	a0,f13
+	cvt.s.w	f13,f13
+	lui	a0,0x4040
+	mtc1	a0,f15
+	lwc1	f16,0x0(s0)
+	lui	a0,0x40C9
+	add.s	f12,f12,f13
+	ori	a0,a0,0xFDB
+	add.s	f14,f12,f14
+	swc1	f12,0x20(sp)
+	mtc1	a0,f12
+	lui	a0,0x43B4
+	mul.s	f12,f16,f12
+	mtc1	a0,f13
+	div.s	f12,f12,f13
+	swc1	f14,0x20(sp)
+	add.s	f22,f14,f15
+	jal	sceVfpuScalarSin
+	swc1	f22,0x20(sp)
+	lui	a3,0x4020
+	mtc1	a3,f12
+	lw	a0,0xB8(s1)
+	mul.s	f12,f0,f12
+	addiu	t0,a0,0x2B4
+	lui	a0,0x8B3
+	add.s	f12,f22,f12
+	addiu	a1,sp,0x10
+	addiu	a2,sp,0x1C
+	addiu	a0,a0,-0x59F0
+	swc1	f12,0x20(sp)
+	lwc1	f13,0x14(t0)
+	swc1	f20,0x24(sp)
+	mul.s	f12,f12,f13
+	jal	z_un_0883aca8
+	swc1	f12,0x20(sp)
+	lw	a0,0xB8(s1)
+	lwc1	f14,0x10(sp)
+	lwc1	f12,0x268(a0) //x position
+	
+
+	li t1,0x0 //loop cnt
+	li t5,0x0
+	li t6,0x0
+
+addx_loop_start:
+
+	//manual get by controlling chars
+	lui t2,0x81e
+	addi t2,t2,0x30
+	add t2,t1
+	lb t2,0x0(t2)
+	
+	//load owner id
+	lb t3,0x5(s4)
+	
+	//self match
+	bne t2,t3,after_store //store our position in the cursor stack
+	nop
+	move t6,t5
+	b addx_loop_continue
+	nop
+	
+after_store:
+	sll	t2,t2,0x2
+	addu	t3,s6,t2
+	
+	lw	t4,0xFC0(t3) //get char
+	lb t3,0x35(t4)
+	beq t3,zero,addx_loop_continue //skip autos
+	nop
+	lb t3,0x533(t4)
+	beq t3,zero,check_char_casting
+	lb t7,0x31(t4) //regular target id
+	lb t7,0x32(t4) //casting target id
+check_char_casting:
+	lb t3,0x5(a0) //get current targeting char id
+	
+	bne t3,t7,addx_loop_continue
+	nop
+	addi t5,t5,0x1 //increase the number of detected overlapping target cursors
+	
+addx_loop_continue:
+
+	addi t1,t1,0x1
+	lb t0,0x5f4(s6) //max allies
+	slt t0,t1,t0
+	bne t0,zero,addx_loop_start
+	nop
+	
+addx_loop_end:
+	beq t5,zero,only_one
+	nop
+	
+	//multiply player index by immediate
+	li t4,0x8
+	li t3,0x2
+	
+	mult t4,t5
+	mflo t0
+	
+	neg t1,t0
+	div t1,t3
+	mflo t1
+	
+	mult t6,t4
+	mflo t0
+	
+	add t0,t1
+	
+only_one:
+	
+	mtc1 t0, f13 //move pindex to f13
+	
+	li t1,0x64 //div val
+	mtc1 t1, f22 //move div to f22
+	cvt.s.w f22, f22 //convert to float
+	
+	cvt.s.w f13, f13 //convert to float
+	div.s f13,f13,f22 //div by 100
+	add.s	f12,f12,f13 //add offset
+	
+	lwc1	f22,0x20(sp)	 //restore f22
+	
+
+p1_check:
+	li t0,0x0
+	bne t0,s5,p2_check
+	nop
+	li	t0,0xFF //r
+	li	t1,0x50 //g
+	li	t2,0x50 //b
+	b check_after
+	nop
+p2_check:
+	li t0,0x1
+	bne t0,s5,p3_check
+	nop
+	li	t0,0x50 //r
+	li	t1,0x50 //g
+	li	t2,0xFF //b
+	b check_after
+	nop
+p3_check:
+	li t0,0x2
+	bne t0,s5,p4_check
+	nop
+	li	t0,0x50 //r
+	li	t1,0xFF //g
+	li	t2,0x50 //b
+	b check_after
+	nop
+p4_check:
+	li t0,0x3
+	bne t0,s5,default
+	nop
+	li	t0,0xFF //r
+	li	t1,0xFF //g
+	li	t2,0x50 //b
+	b check_after
+	nop
+default: //this really shouldnt happen
+	li	t0,0xFF
+	li	t1,0xFF
+	li	t2,0xFF
+	b check_after
+	nop
+check_after:
+	
+	lwc1	f13,0x14(sp)
+	add.s	f14,f14,f12
+	lwc1	f12,0x18(sp)
+	swc1	f14,0x10(sp)
+	lwc1	f15,0x26C(a0)
+	add.s	f13,f13,f15
+	swc1	f13,0x14(sp)
+	lwc1	f16,0x270(a0)
+	add.s	f12,f12,f16
+	swc1	f12,0x18(sp)
+	
+	//lwc1	f12,0x10(sp)
+	//lwc1	f13,0x14(sp)
+	//lwc1	f14,0x18(sp)
+	
+	lb	a1,0x94(a0)
+	bne	a1,zero,label_08880828
+	
+	li	s1,0x1
+	lbu	a1,0xF(a0)
+	li	a2,0xF
+	beql	a1,a2,label_0888082C
+	li	s2,0x0
+	lh	a0,0xCE(a0)
+	beql	a0,zero,label_08880830
+	//lbu	a0,0x1B34(s0) //load isPCasting from somewhere
+	lbu	a0,0x533(s4) //load isPCasting from stored chara
+
+label_08880828:
+
+	li	s2,0x0
+
+label_0888082C:
+
+	//lbu	a0,0x1B34(s0) //load isPCasting from somewhere
+	lbu	a0,0x533(s4) //load isPCasting from stored chara
+
+label_08880830:
+
+	bne	a0,s1,not_casting
+	lui	a0,0x8AF
+	mov.s	f15,f12
+	sw	zero,0x0(sp)
+	mov.s	f12,f14
+	sw	zero,0x4(sp)
+	move	a0,s0
+	mov.s	f14,f15
+	li	a1,0x6
+	li	a2,0x0
+	li	a3,0x0
+	//li	t0,0xFF //r
+	//li	t1,0xFF //g
+	//li	t2,0xFF //b
+	li	t3,0xFF //a
+	jal	z_un_0887e044
+	sw	zero,0x8(sp)
+	b	label_08880990
+	nop	
+
+not_casting:
+
+	addiu	a0,a0,0x1F30
+	lbu	a0,0x5FA(a0) //load islocked status
+	bnel	a0,zero,locked_on
+	mov.s	f15,f12
+	mov.s	f15,f12
+	sw	zero,0x0(sp)
+	mov.s	f12,f14
+	sw	zero,0x4(sp)
+	move	a0,s0
+	mov.s	f14,f15
+	li	a1,0x5 //blue cursor texture
+	
+	//for testing
+	//lui t0,0x81e
+	//lw a1,0x60(t0)
+	
+	li	a2,0x0
+	li	a3,0x0
+	//li	t0,0xFF //r
+	//li	t1,0xFF //g
+	//li	t2,0xFF //b
+	li	t3,0xFF //a
+	jal	z_un_0887e044
+	sw	zero,0x8(sp)
+	
+	beq	s2,zero,label_08880990
+	nop	
+	lwc1	f12,0x10(sp)
+	lwc1	f13,0x14(sp)
+	lwc1	f14,0x18(sp)
+	sw	zero,0x0(sp)
+	sw	zero,0x4(sp)
+	move	a0,s0
+	li	a1,0x5
+	li	a2,0x0
+	li	a3,0x0
+	//li	t0,0xFF //r
+	//li	t1,0xFF //g
+	//li	t2,0xFF //b
+	li	t3,0xC8 //a
+	jal	z_un_0887e044
+	sw	s1,0x8(sp)
+	b	label_08880990
+	nop	
+
+locked_on:
+
+	sw	zero,0x0(sp)
+	mov.s	f12,f14
+	sw	zero,0x4(sp)
+	move	a0,s0
+	mov.s	f14,f15
+	li	a1,0x4
+	li	a2,0x0
+	li	a3,0x0
+	//li	t0,0xFF //r
+	//li	t1,0xFF //g
+	//li	t2,0xFF //b
+	li	t3,0xFF //a
+	jal	z_un_0887e044
+	sw	zero,0x8(sp)
+	beq	s2,zero,label_08880990
+	nop	
+	lwc1	f12,0x10(sp)
+	lwc1	f13,0x14(sp)
+	lwc1	f14,0x18(sp)
+	sw	zero,0x0(sp)
+	sw	zero,0x4(sp)
+	move	a0,s0
+	li	a1,0x4
+	li	a2,0x0
+	li	a3,0x0
+	//li	t0,0xFF //r
+	//li	t1,0xFF //g
+	//li	t2,0xFF //b
+	li	t3,0xFF //a
+	jal	z_un_0887e044
+	sw	s1,0x8(sp)
+
+label_08880990:
+
+	//char icon ring
+	lwc1	f12,0x10(sp)
+	lwc1	f13,0x14(sp)
+	
+	li t0,0x2D //y offset
+	mtc1 t0, f14 //move to flt
+	cvt.s.w f14, f14 //convert to float
+	
+	li t1,0x64 //div val
+	mtc1 t1, f22 //move div to f22
+	cvt.s.w f22, f22 //convert to float
+	
+	div.s f14,f14,f22 //div by 100
+	add.s	f13,f13,f14 //add offset
+	
+	swc1	f13,0x14(sp) //save the new y offset
+	
+	lwc1	f22,0x20(sp)	 //restore f22
+	lwc1	f14,0x18(sp) //load x
+	
+	li	a1,0x2 //sprite id (background)
+	li	a2,0x10 //scale x
+	li	a3,0x10 //scale y
+	
+	li	t0,0xFF //r
+	li	t1,0xFF //g
+	li	t2,0xFF //b
+	li	t3,0xFF //a
+	
+	move	a0,s0
+	
+	jal	z_un_0887e044
+	sw	zero,0x8(sp) //blend mode
+	//
+	
+	//repeat
+	//char face icon
+	
+	lwc1	f12,0x10(sp) //load z
+	lwc1	f13,0x14(sp) //load y
+	lwc1	f14,0x18(sp) //load x
+	
+	lb a0,0x5(s4) //target owner slot id
+	
+	li t4,0x3
+	mult t4,a0
+	mflo a0
+	addi a1,a0,0xDE
+	
+	//li	a1,0xDE //sprite id
+	li	a2,0x10 //scale x
+	li	a3,0x10 //scale y
+	
+	li	t0,0xFF //r
+	li	t1,0xFF //g
+	li	t2,0xFF //b
+	li	t3,0xFF //a
+	
+	move	a0,s0
+	
+	jal	z_un_0887e044
+	sw	zero,0x8(sp) //blend mode
+	//finally done
+
+	lwc1	f20,0x28(sp)
+	lwc1	f22,0x2C(sp)
+	lw	s0,0x30(sp)
+	lw	s1,0x34(sp)
+	lw	s2,0x38(sp)
+	lw	ra,0x3C(sp)
+	jr	ra
+	addiu	sp,sp,0x40

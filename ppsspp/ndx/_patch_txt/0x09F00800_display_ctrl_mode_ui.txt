@@ -1,0 +1,133 @@
+address: 0x09F00800
+
+	lw	a1,0x48(sp)
+	addi	sp,sp,-0xC //whoops pushing stack during function exec
+	sw	s7,0x0(sp)
+	li	s7,0x0 //loop reg
+	lui	t9,0x81E
+	li	a2,0x0
+
+loop_start:
+	lui	t9,0x81E //double lui whoops
+	
+	add	t8,t9,s7
+	lbu	t7,0x20(t8)
+	li	t6,0x6E //pos
+	
+	multu	t6,s7
+	mflo	a2 //pos = 0x6E*player
+	beq	t7,zero,label_09F00864
+	nop	
+	addi	t7,t7,-0x1
+	sb	t7,0x20(t8)
+
+label_09F00864:
+	move	a0,t7
+	b	label_09F00888
+	nop	
+	//lb	a0,0x601(a1)
+
+label_09F00888:
+
+	sltu	a0,zero,a0
+	andi	a0,a0,0xFF
+	beq	a0,zero,label_09F009A4
+	nop	
+	
+	jal	0x09F00D00 //get char
+	move	a0,s7 //load controlling char id for p index
+	nop
+	
+	lb	a0,0x35(v0)
+	bgtz	a0,label_09F008FC
+	slti	a1,a0,0x2
+	bltz	a0,label_09F009A4
+	li	v0,0xFF
+	sw	v0,0x0(sp)
+	sw	v0,0x4(sp)
+	sw	zero,0x8(sp)
+	sw	zero,0xC(sp)
+	sw	zero,0x10(sp)
+	sw	zero,0x14(sp)
+	move	a0,s4
+	li	a1,0x10
+	addi	a2,a2,0x2
+	li	a3,0xD4
+	li	t0,0x0
+	li	t1,0x0
+	li	t2,0xFF
+	li	t3,0xFF
+	jal	z_un_0887cff8
+	sw	zero,0x18(sp)
+	b	label_09F009A4
+	nop	
+
+label_09F008FC:
+
+	bne	a1,zero,label_09F0091C
+	li	v0,0xFF
+	slti	a0,a0,0x3
+	bne	a0,zero,label_09F00964
+	li	v0,0xFF
+	b	label_09F009A4
+	nop	
+	li	v0,0xFF
+
+label_09F0091C:
+
+	sw	v0,0x0(sp)
+	sw	v0,0x4(sp)
+	sw	zero,0x8(sp)
+	sw	zero,0xC(sp)
+	sw	zero,0x10(sp)
+	sw	zero,0x14(sp)
+	move	a0,s4
+	li	a1,0xF
+	addi	a2,a2,0x2
+	li	a3,0xD4
+	li	t0,0x0
+	li	t1,0x0
+	li	t2,0xFF
+	li	t3,0xFF
+	jal	z_un_0887cff8
+	sw	zero,0x18(sp)
+	b	label_09F009A4
+	nop	
+
+label_09F00964:
+
+	sw	v0,0x0(sp)
+	sw	v0,0x4(sp)
+	sw	zero,0x8(sp)
+	sw	zero,0xC(sp)
+	sw	zero,0x10(sp)
+	sw	zero,0x14(sp)
+	move	a0,s4
+	li	a1,0x11
+	addi	a2,a2,0x2
+	li	a3,0xD4
+	li	t0,0x0
+	li	t1,0x0
+	li	t2,0xFF
+	li	t3,0xFF
+	jal	z_un_0887cff8
+	sw	zero,0x18(sp)
+
+label_09F009A4:
+
+	lw	a1,0x54(sp)
+	lbu	t8,0x5F4(a1)
+	li	a2,0x0
+	
+	addi	s7,s7,0x1
+	slt	t7,s7,t8
+	
+	bne	t7,zero,loop_start
+	nop
+
+return:
+	lui t8,0x81e
+	sw	zero,0x8(t8)
+	lw	s7,0x0(sp)
+	j	0x0888F8E8
+	addi	sp,sp,0xC

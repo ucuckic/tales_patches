@@ -1,0 +1,128 @@
+address: 0x09F10B00
+
+//09F10B00
+thing_1: //og 088E9560
+	lui	t7,0x81E
+	lw	t6,0x4(t7) //controller to read from during input loop
+	beq t6,zero,player_0_09
+	nop
+	
+	lui	t0,0x830
+	addiu	t0,t0,-0x1000 //pad analog offset area jank
+
+	sll	t5,t6,0xA //mul by index
+	addu	t5,t5,t0
+
+	jr	ra
+	lbu	v0,0x08(t5) //load
+	nop //just for readability in the debugger
+player_0_09:
+	j 0x088E9560
+	nop
+
+//09F10B34
+thing_2: //og 088E9570
+	lui	t7,0x81E
+	lw	t6,0x4(t7) //controller to read from during input loop
+	beq t6,zero,player_0_10
+	nop
+	
+	lui	t0,0x830
+	addiu	t0,t0,-0x1000 //pad analog offset area jank
+
+	sll	t5,t6,0xA //mul by index
+	addu	t5,t5,t0
+
+	jr	ra
+	lbu	v0,0x09(t5) //load
+	nop //just for readability in the debugger
+player_0_10:
+	j 0x088E9570
+	nop
+
+//09F10B68
+analog_hold: //og 088E9580
+
+	lui	t7,0x81E
+	lw	t6,0x4(t7) //controller to read from during input loop
+	beq t6,zero,player_0_0
+	nop
+	
+	lui	t0,0x830
+	addiu	t0,t0,-0xF60 //pad analog offset area jank
+
+	sll	t5,t6,0xA //mul by index
+	addu	t5,t5,t0
+
+	jr	ra
+	lbu	v0,0x80(t5) //load
+	nop //just for readability in the debugger
+player_0_0:
+	j 0x088E9580
+	nop
+
+//09F10B9C
+analog_press: //og 088E9590
+
+	lui	t7,0x81E
+	lw	t6,0x4(t7) //controller to read from during input loop
+	beq t6,zero,player_0_1
+	nop
+	
+	lui	t0,0x830
+	addiu	t0,t0,-0xF60 //pad analog offset area jank
+
+	sll	t5,t6,0xA //mul by index
+	addu	t5,t5,t0
+
+	jr	ra
+	lbu	v0,0x84(t5) //load
+	nop //just for readability in the debugger
+player_0_1:
+	j 0x088E9590
+	nop
+
+
+//09F10BD0
+analog_3: //og 088E95A0
+
+	lui	t7,0x81E
+	lw	t6,0x4(t7) //controller to read from during input loop
+	beq t6,zero,player_0_2
+	nop
+	
+	lui	t0,0x830
+	addiu	t0,t0,-0xF60 //pad analog offset area jank
+
+	sll	t5,t6,0xA //mul by index
+	addu	t5,t5,t0
+
+	jr	ra
+	lbu	v0,0x88(t5) //load
+	nop //just for readability in the debugger
+player_0_2:
+	j 0x088E95A0
+	nop
+
+
+//09F10C04
+analog_4: //og 088E95B0
+
+	lui	t7,0x81E
+	lw	t6,0x4(t7) //controller to read from during input loop
+	beq t6,zero,player_0_3
+	nop
+	
+	lui	t0,0x830
+	addiu	t0,t0,-0xF60 //pad analog offset area jank
+
+	sll	t5,t6,0xA //mul by index
+	addu	t5,t5,t0
+
+	jr	ra
+	lbu	v0,0x8C(t5) //load
+	nop //just for readability in the debugger
+player_0_3:
+	j 0x088E95B0
+	nop
+

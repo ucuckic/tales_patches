@@ -1,0 +1,28 @@
+address: 0x09F00600
+
+	lui	t0,0x8B0
+	addi	t0,t0,0x69C4 //addr of party ctrl modes
+	li	t1,0x0 //loop counter
+
+loop_start:
+
+	jal	0x09F00D00 //get char
+	move a0,t1
+	
+	beq	v0,zero,return
+	nop	
+	add	t8,t1,t0
+	lb	t8,0x0(t8)
+	sb	t8,0x35(v0)
+	
+	addi	t1,t1,0x1
+	
+	lb	t9,0x5F4(s6) //num allies
+	slt	t7,t1,t9
+	bne	t7,zero,loop_start //loop for num allies
+	nop	
+
+return:
+	lbu	a0,0x5F6(s6)
+	lbu	a1,0x5F4(s6)
+	j	0x08817B20

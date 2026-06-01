@@ -1,0 +1,130 @@
+address: 0x09F10500
+	
+	//lets convert this entire code section into a function
+	//build stack frame and store ra
+	
+	//input check function during btl for select/start/right trigger
+	
+	addiu	sp,sp,-0x10
+	sw	s0,0x0(sp)
+	sw	s1,0x4(sp)
+	sw	s3,0x8(sp) //loop cnt
+	sw	ra,0xC(sp)
+	
+	
+	lui s1,0x81e //load our mem (+0x4 = loop index/controller to read)
+	li s3,0x00 //initialize loop cnt
+	
+	
+loop_start:
+	sw s3,0x4(s1) //store pad update index
+	
+	jal	0x09F00300
+	li	a0,0x0
+	lhu	a0,0x2A(s2) // right trigger (target) bind check
+	and	a0,v0,a0
+	beq	a0,zero,label_1
+	nop	
+	lb	a0,0x65C(s2)
+	sltu	a0,zero,a0
+	andi	a0,a0,0xFF
+	beq	a0,zero,label_1
+	nop	
+	lb	a0,0x63B(s2)
+	sltu	a0,zero,a0
+	andi	a0,a0,0xFF
+	bne	a0,zero,label_1
+	li	a0,0x14
+	mtc1	zero,f12
+	sb	a0,0x5ED(s2)
+	lui	a0,0x8B3
+	sb	zero,0x5FF(s2)
+	addiu	a0,a0,-0x5EB0
+	lwc1	f13,0x278(a0)
+	swc1	f12,0x278(a0)
+	b	loop
+	swc1	f13,0x27C(a0)
+
+label_1:
+
+	jal	0x09F00370 //input get
+	li	a0,0x0
+	lhu	a0,0x2C(s2) // pause button bind check
+	and	a0,v0,a0
+	bne	a0,zero,label_2
+	nop	
+	lb	a0,0x67F(s2)
+	beq	a0,zero,label_3
+	nop	
+
+label_2:
+
+	jal	z_un_0880d670
+	move	a0,s2
+	//b	loop
+	b	end //go straight to the end because pausing is an interruptive action
+	nop	
+
+label_3:
+
+	jal	0x09F00370 //input get
+	li	a0,0x0
+	lhu	a0,0x2E(s2) // select button bind check
+	and	a0,v0,a0
+	beq	a0,zero,loop
+	nop	
+	lb	a0,0x662(s2)
+	sltu	a0,zero,a0
+	andi	a0,a0,0xFF
+	beq	a0,zero,loop
+	nop	
+	lb	a0,0x63B(s2)
+	sltu	a0,zero,a0
+	andi	a0,a0,0xFF
+	bne	a0,zero,loop
+	nop	
+	lh	a0,0x5E4(s2)
+	bne	a0,zero,loop
+	nop	
+	
+	/*
+	bne s3,zero,custom_mode_update
+	nop
+	jal 0x0880E638 //original update for index 0 (lazy fix to work against the new display code that goes through normal execution for player 0)
+	move a0,s2 //base pointer arg
+	b post_mode_update
+	nop
+	*/
+custom_mode_update:
+	jal	0x09F10800 //custom mode update function
+	move a0,s3 //player index as arg
+	
+post_mode_update:
+	li	a0,0x08B29C0C
+	li	a1,0x0
+	li	a2,0x0
+	li	a3,0x20
+	li	t0,0x0
+	jal	z_un_0886cbb0
+	li	t1,0x64
+
+
+loop:
+	
+	addi s3,s3,0x1 //loop increment
+	
+	lb t0,0x5f4(s2) //obtain ally count
+	slt t1,s3,t0
+	bne t1,zero,loop_start
+	nop
+
+end:
+
+	//jal	z_un_0880e568
+	
+	lw	s0,0x0(sp)
+	lw	s1,0x4(sp)
+	lw	s3,0x8(sp)
+	lw	ra,0xC(sp)
+	jr	ra
+	addiu	sp,sp,0x10
