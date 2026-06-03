@@ -1,0 +1,119 @@
+address: 0x09F20000 //shifted
+
+	addi	sp,sp,-0x10
+	sw	s4,0xC(sp)
+	sw	s5,0x8(sp)
+	sw	ra,0x4(sp)
+	
+	li	s4,0x0 //loop index
+
+loop_start:
+
+	lui	t7,0x81E
+	sw	s4,0x4(t7) //store pad command byte
+	
+	add	s5,s4,t7
+	lb	s5,0x30(s5)
+	
+	slt	t5,s5,zero
+	bne	t5,zero,continue
+	
+	lbu	a0,0x3D(s0)
+	lw	a1,0x4AC(s2)
+	lhu	a2,0xCA(s0)
+	mult	a0,a1
+	mflo	a0
+	addu	a0,a2,a0
+	sh	a0,0xCA(s0)
+	nop	
+	
+		
+	lb t0,0x627(s2) //mimic active
+	beq t0,zero,not_mimic
+	nop
+	
+	jal	0x09F00D00 //get char by index
+	move	a0,s4
+	
+	lb t0,0x62A(s2) //who is a mimic
+	beq t0,s5,mimic_match
+	nop
+	
+	b not_mimic
+	nop
+
+mimic_match:
+	lb t0,0x35(v0) //mode
+	beq t0,zero,continue //skip mimic override on auto
+	nop
+	jal	z_un_08848bd0 //perform our input update - skip mimic update - continue
+	move	a0,s0
+	
+	//this shouldnt be necessary but im scared
+	b continue
+	nop
+	
+not_mimic:
+	jal	z_un_08848bd0 //input testy
+	move	a0,s0
+	
+	lb t0,0x627(s2)
+	beq t0,zero,continue
+	nop
+	
+	jal	0x09F00D00 //get char by index
+	move	a0,s4
+	lb t0,0x5(v0) //id
+	lb t1,0x629(s2)
+	
+	//no mimic control owner match
+	bne t0,t1,continue
+	nop
+	
+	lb t0,0x62A(s2) //mimic char slot
+	sll	t0,t0,0x2
+	addu	t0,s2,t0
+	lw	t1,0xFC0(t0) //get char
+	lb t1,0x35(t1)
+	
+	bne t1,zero,continue //dont update a mimic that is being player controlled
+	nop
+	
+test:
+	//update mimic ctrl
+	lw	a0,0x110(s0)
+	beq	a0,zero,mimic_ctrl
+	nop	
+	lw	a1,0x10C(s0)
+	sw	zero,0x110(s0)
+	or	a0,a1,a0
+	sw	a0,0x10C(s0)
+
+mimic_ctrl:
+
+	jal	z_un_088674c8
+	move	a0,s0
+	
+bnel v0,zero,continue
+	nop
+	jal	z_un_08842260 //mimic auto move update
+	move	a0,s0
+
+continue:
+
+	addi	s4,s4,0x1
+	nop	
+	li	t4,0x4
+	bne	s4,t4,loop_start
+	nop	
+	
+return:
+	lh	a0,0xCE(s0) //what is this
+	
+	sw	zero,0x4(t7)
+	lw	s4,0xC(sp)
+	lw	s5,0x8(sp)
+	lw ra,0x4(sp)
+	
+	jr	ra
+	addi	sp,sp,0x10

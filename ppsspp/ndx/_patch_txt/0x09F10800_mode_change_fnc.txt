@@ -39,15 +39,17 @@ address: 0x09F10800
 
 label_2:
 
+//abolish mimic activity check code
+/*
 	bne	s1,zero,label_3
 	nop	
-	lb	a0,0x627(s0)
+	lb	a0,0x627(s0) //is mimic active
 	sltu	a0,zero,a0
 	andi	a0,a0,0xFF
 	beq	a0,zero,label_3
 	nop	
 	li	s1,0x1
-
+*/
 label_3:
 
 	sb	s1,0x35(v0)

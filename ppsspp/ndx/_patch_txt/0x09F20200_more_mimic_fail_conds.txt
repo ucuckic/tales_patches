@@ -1,0 +1,44 @@
+
+address: 0x09F20200	
+	/*
+	addi	sp,sp,-0x10
+	sw	s4,0xC(sp)
+	sw	s5,0x8(sp)
+	sw	ra,0x4(sp)
+	
+	
+	lw	s4,0xC(sp)
+	lw	s5,0x8(sp)
+	lw ra,0x4(sp)
+	
+	jr	ra
+	addi	sp,sp,0x10
+	*/
+	
+	lb t0,0x629(s2) //get caster slot id
+	
+	sll	t0,t0,0x2
+	addu	t0,t0,s2
+	lw	t0,0xFC0(t0) //load caster char
+	lb t1,0x35(t0) //get mode
+	bne t1,zero,normal_return //skip if manual
+	nop
+	
+	lb t0,0x62A(s2) //get mimic slot id
+	sll	t0,t0,0x2
+	addu	t0,t0,s2
+	lw	t0,0xFC0(t0) //load caster char
+	lb t1,0x35(t0) //get mode
+	bne t1,zero,normal_return //the host wasnt manual, so check ourselves too
+	nop
+	
+	//condition: both characters are auto
+	j 0x0881651C //kill the dog
+	nop
+	
+	
+normal_return:
+	addu	a0,a0,a1
+	slt	a0,a2,a0
+	
+	j 0x08816514

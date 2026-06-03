@@ -1,0 +1,78 @@
+address: 0x09F20500
+
+	addi	sp,sp,-0x10 //verboten midexec stack push
+	sw a1,0x4(sp)
+	sw a0,0x8(sp)
+	
+	lhu	a1,0x6(s3)
+	lui	a3,0x8B3
+	lbu	s2,0x5(a0)
+	li	a2,0x0
+	
+	jal	z_un_08862628
+	addiu	s6,a3,-0x63E8
+	lb	a3,0x31(s0)
+	
+	move	a0,s6
+	move	a1,s2
+	move	a2,v0
+	jal	z_un_08890480
+	li	t0,0x1
+	lw	a0,0xFC0(s5)
+	lhu	a1,0x6(s3)
+	
+	move	s6,v0
+
+	lw	s2,0x5CC(a0)
+	jal	z_un_08862628
+	li	a2,0x0
+	move t0,s2
+	li s2,0x0
+	//lw	t0,0x5CC(s0)
+	
+	
+	sll	a0,v0,0x4
+	addu	a1,v0,a0
+	sll	a1,a1,0x2
+	addu	a0,a0,a1
+	addu	a0,t0,a0
+	lhu	a0,0x12(a0)
+	andi	a0,a0,0x8
+	
+	move t0,a0
+	
+	lw a0,0x8(sp)
+	lw a1,0x4(sp)
+	addi	sp,sp,0x10
+	
+	beq	t0,zero,not_dog
+	nop
+	
+	li	a1,0x1
+	sb	a1,0x9CC(a0)
+	
+	lbu	a0,0x5(s0)
+	
+	lw	a1,0xFC0(s5)
+	sb	a0,0x9CE(a1)
+	//j	0x088673E0
+	j 0x08867428
+	sb	a0,0x9CF(a1)
+
+
+
+not_dog:
+
+	lb	a2,0x35(a0)
+	bne	a2,zero,return_manual
+	nop
+	
+	
+return_auto:
+	j 0x08867324
+	nop
+
+
+return_manual:
+	j 0x088673E0
+	li	s7,0x1
