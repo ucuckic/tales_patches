@@ -103,8 +103,9 @@ continue:
 
 	addi	s4,s4,0x1
 	nop	
-	li	t4,0x4
-	bne	s4,t4,loop_start
+	lb	t4,0x5f4(s2) //max allies
+	slt t4,s4,t4
+	bne	t4,zero,loop_start
 	nop	
 	
 return:
