@@ -1,0 +1,105 @@
+//a0: slot to check
+//a1: team check (0: global, 1: ally, 2: enemy, default: global)
+//uses t3-t9
+//returns closest character in v0
+
+address: 0x9F01900
+
+
+  addiu sp,sp,-0xC
+  swc1 f31,0x0(sp)
+  swc1 f30,0x4(sp)
+  swc1 f29,0x8(sp)
+  
+  lui t9,0x08AF
+  ori t9,t9,0x1F30 //0x8AF1F30, main ptr
+  lbu t8,0x5F4(t9) //ally count
+  lbu t7,0x5F5(t9) //enemy count
+  
+  //get character x coord from slot
+  addiu t5,t9,0xFC0 //char table
+  sll t3,a0,2 // * 0x4 offset
+  addu t3,t3,t5 // + char table
+  lw t3,0(t3) //char ptr
+  lwc1 f30,0x268(t3) //x coord
+  //abs.s f30,f30
+  
+  li.s f29,1.0e30 //best distance
+  move v0,a0 //returned value
+
+  li t6,2
+  beq a1,t6,enemy
+  nop
+  li t6,1
+  beq a1,t6,ally
+  nop
+  j global
+  nop
+  
+global:
+  //li v0,0 //returned value
+  li t6,0 //loop counter
+  addu t8,t7,t8 //max count
+  
+  j loop
+  nop
+  
+enemy:
+  //move v0,t8 //returned value
+  move t6,t8 //loop counter
+  addu t8,t7,t8 //max count
+  
+  j loop
+  nop
+  
+ally:
+  //li v0,0 //returned value
+  li t6,0 //loop counter
+  //max is already set
+  j loop
+  nop
+  
+loop_continue:
+  addiu t6,t6,1
+loop:
+  beq t6,t8,return //t8 is max count
+  nop
+  beq t6,a0,loop_continue //skip targeted character
+  nop
+  
+  sll t3,t6,2 // * 0x4 offset
+  addu t3,t3,t5 // + char table
+  lw t3,0(t3) //char ptr
+  
+  lw t4,0x194(t3) //load flags
+  andi t9,t4,0x8 //death
+  bnez t9,loop_continue
+  nop
+  andi t9,t4,0x4 //untargetable/inactive
+  bnez t9,loop_continue
+  nop
+  
+  lwc1 f31,0x268(t3) //x coord
+  //abs.s f31,f31
+  
+  sub.s f31,f31,f30 //distance
+  abs.s f31,f31
+  
+  c.lt.s f31,f29 //compare distance with next
+  bc1f loop_continue
+  nop
+
+  //fill out return values
+  mov.s f29,f31 //best distance
+  move v0,t6 //character slot
+  j loop_continue
+  nop
+  
+return:
+  lwc1 f29,0x8(sp)
+  lwc1 f30,0x4(sp)
+  lwc1 f31,0x0(sp)
+  addiu sp,sp,0xC
+  jr ra
+  nop
+  

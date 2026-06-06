@@ -11,6 +11,19 @@ address: 0x09F10D00
 	sw	ra,0x1C(sp)
 	
 	li s6,0x08AF1F30 //fuck it directly load main pointer
+	lbu t0,0x5ED(s6) //main state?
+	
+	li t1,0x10 //selecting user 
+	beq t0,t1,normal_draw
+	nop
+	
+	li t1,0x11 //selecting target of item
+	beq t0,t1,normal_draw
+	nop
+	
+	li t1,0x12 //selecting target
+	beq t0,t1,normal_draw
+	nop
 	
 	//li s5,0x0 //loop index
 	lb s5,0x5f4(s6)
@@ -24,6 +37,8 @@ address: 0x09F10D00
 	slti t0,t0,0x2
 	beq t0,zero,loop_start //continue to the regular gaming
 	nop
+	
+normal_draw:
 	jal 0x088806AC //unmodified cursor draw
 	addiu	a0,s0,0x784
 	b return

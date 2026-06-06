@@ -1,0 +1,75 @@
+//s0 is char
+//s5 is main ptr
+address: 0x9F02100
+
+
+  lbu a2,0x5(s0) //slot of chara, original code, should be Couleur himself
+  lbu t0,0x9CE(s0) //caster slot, original code
+  bne a2,t0,return //original code-ish
+  nop
+  
+  addiu sp,sp,-0x8
+  sw a0,0x0(sp)
+  sw a1,0x4(sp)
+  
+  lbu t1,0x627(s5)
+  bne t1,zero,return_cleanup //return to original code if mimic is active
+  nop
+  
+  lbu t1,0x5C4(s5) //mimic used
+  lbu t2,0x5C6(s5) //mimic max use
+  bge t1,t2,error_used //return to original code if mimic was used before (疲れているようだ)
+  nop
+
+  //code for getting closest chara
+  move a0,a2 //Couleur as the character
+  jal 0x9F01900 //closest chara func
+  li a1,0x1 //allies only
+  
+  beq v0,a2,error_unable //no other character found
+  nop
+
+  sw v0,0x9CE(s0)
+  sw v0,0x9CF(s0) //store for later use
+  
+  j skip_cleanup
+  nop
+
+error_unable:
+  j display_error
+  li s1,0x3 //error code, cannot be used
+  
+error_used:  
+  li s1,0x2 //error code, already used
+  
+display_error:
+  lw a1,0x4(sp)
+  lw a0,0x0(sp)
+  addiu sp,sp,0x8
+  
+  li s3,0x0 //print message
+  //li s4,0x0 //stop softlock?
+  j 0x8858148
+  sb zero,0x9CC(s0) //stop shortcut
+  j skip
+  nop
+
+return_cleanup:
+  lw a1,0x4(sp)
+  lw a0,0x0(sp)
+  addiu sp,sp,0x8
+  move t0,v0
+  
+return:
+  j 0x08857F10
+  nop
+  
+skip_cleanup:
+  lw a1,0x4(sp)
+  lw a0,0x0(sp)
+  addiu sp,sp,0x8
+  
+skip:
+  j 0x08857F48
+  lb a2,0x9CD(s0) //original code
+  

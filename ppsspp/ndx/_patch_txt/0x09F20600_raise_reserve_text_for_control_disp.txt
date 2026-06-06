@@ -1,0 +1,47 @@
+address: 0x09F20600
+	
+	li t3,0x08AF1F30 //main
+	lb t3,0x5f4(t3) //ally cnt
+	
+	lui t0,0x81e
+	li t2,0x0 //loop index
+
+
+loop_start:
+	
+	add	t1,t0,t2
+	lb t1,0x30(t1)
+	
+	bne t1,s3,continue
+	nop
+	//char match
+	add	t1,t0,t2 //run that shit back
+	
+	lbu	t1,0x20(t1) //control display timer
+	slti t1,t1,0x2 //cheating to fix one frame float
+	bne t1,zero,no_boost
+	nop
+	
+	b boost
+	nop
+	
+continue:
+	addi t2,t2,0x1
+	
+	slt t1,t2,t3
+	bne t1,zero,loop_start
+	nop
+	b no_boost
+	nop
+	
+boost:
+	addi a3,a3,-0x0D
+	
+no_boost:
+	li	t0,0x0
+	li	t1,0x0
+	li	t2,0xFF
+	li	t3,0xFF
+	
+	j 0x0888F35C //return
+	nop

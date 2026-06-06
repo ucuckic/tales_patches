@@ -51,7 +51,7 @@ label_09F00888:
 	sw	zero,0x14(sp)
 	move	a0,s4
 	li	a1,0x10
-	addi	a2,a2,0x2
+	addi	a2,a2,0x19 //x initial offset
 	li	a3,0xD4
 	li	t0,0x0
 	li	t1,0x0
@@ -83,7 +83,7 @@ label_09F0091C:
 	sw	zero,0x14(sp)
 	move	a0,s4
 	li	a1,0xF
-	addi	a2,a2,0x2
+	addi	a2,a2,0x19 //x initial offset
 	li	a3,0xD4
 	li	t0,0x0
 	li	t1,0x0
@@ -104,7 +104,7 @@ label_09F00964:
 	sw	zero,0x14(sp)
 	move	a0,s4
 	li	a1,0x11
-	addi	a2,a2,0x2
+	addi	a2,a2,0x19 //x initial offset
 	li	a3,0xD4
 	li	t0,0x0
 	li	t1,0x0
