@@ -1,0 +1,21 @@
+address: 0x09F00D90	
+	
+	addiu	sp,sp,-0x08
+	sw	s0,0x0(sp)
+	sw	ra,0x4(sp)
+	
+	li	t7,0x08AF1F30 //main
+	lb t9,0x5f4(t7)
+	bge a0,t9,return
+	li v0,0xff //nega
+
+	lui	t9,0x81E
+	add	t8,t9,a0
+	lb	a0,0x30(t8)
+	move	v0,a0
+
+return:
+
+	lw	ra,0x4(sp)
+	jr	ra
+	addiu	sp,sp,0x08

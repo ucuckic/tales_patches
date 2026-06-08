@@ -3,9 +3,20 @@
 address: 0x9F02100
 
 
-  lbu a2,0x5(s0) //slot of chara, original code, should be Couleur himself
+  lbu a2,0x5(s0) //slot of chara, original code
   lbu t0,0x9CE(s0) //caster slot, original code
-  bne a2,t0,return //original code-ish
+  bne a2,t0,return //original code-ish, return if they are not the same character
+  nop
+  
+  //Couleur check
+  lui t1,0x8AF
+  addiu t1,t1,0x2F8C
+  //addiu t1,t1,0x4
+  sll t2,a2,2
+  add t1,t1,t2
+  lhu t1,0x0(t1) //character loadout
+  li t2,2 //Couleur loadout
+  bne t1,t2,return //return if not Couleur
   nop
   
   addiu sp,sp,-0x8
@@ -18,13 +29,13 @@ address: 0x9F02100
   
   lbu t1,0x5C4(s5) //mimic used
   lbu t2,0x5C6(s5) //mimic max use
-  bge t1,t2,error_used //return to original code if mimic was used before (疲れているようだ)
+  bge t1,t2,error_used //return to original code if mimic was used before (tsukarete iru you da)
   nop
 
   //code for getting closest chara
   move a0,a2 //Couleur as the character
   jal 0x9F01900 //closest chara func
-  li a1,0x1 //allies only
+  li a1,1 //allies only
   
   beq v0,a2,error_unable //no other character found
   nop

@@ -1,0 +1,12 @@
+address: 0x09F20750
+
+	
+	lb	a2,0x620(s4) //last ob/hiougi
+	bne	a2,s1,return
+	nop
+	move	a1,s3
+
+
+
+return:
+	j 0x0881683C

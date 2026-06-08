@@ -1,0 +1,17 @@
+address: 0x09F20880	
+	
+	addiu	sp,sp,-0x10
+	sw	a0,0x0(sp)
+	sw	a1,0x4(sp)
+	sw	a2,0x8(sp)
+	sw	a3,0xC(sp)
+	jal	pos_09F20900
+	nop	
+	lw	a0,0x0(sp)
+	lw	a1,0x4(sp)
+	lw	a2,0x8(sp)
+	lw	a3,0xC(sp)
+	addiu	sp,sp,0x10
+	addiu	s5,s5,0x1D20
+	j	pos_088147E8
+	addiu	s7,s7,-0x5AB0

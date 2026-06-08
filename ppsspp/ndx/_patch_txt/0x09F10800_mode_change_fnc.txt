@@ -1,7 +1,6 @@
 address: 0x09F10800
 
 	addiu	sp,sp,-0x20
-	//lb	a1,0x601(a0)
 	sw	s0,0x0(sp)
 	sw	s1,0x4(sp)
 	sw	s2,0x8(sp)
@@ -55,6 +54,7 @@ label_3:
 	sb	s1,0x35(v0)
 	lb	a0,0x35(v0)
 	lui	a1,0x8B0
+	add a1,s4
 	bne	s2,zero,label_4
 	sb	a0,0x69C4(a1)
 	lb	a0,0x35(v0)

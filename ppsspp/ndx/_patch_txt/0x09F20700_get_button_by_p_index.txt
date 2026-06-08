@@ -1,0 +1,130 @@
+
+address: 0x09F20700
+
+//
+fnc_btn_4850:
+	//a0 = whatever it was originally
+	//a1 = player index
+	//a2 = not an input
+	andi	a2,a0,0xFF
+	beq	a1,zero,og_function_0
+	nop
+	lui	t5,0x830
+	addi	t4,t5,0x3864
+	sll	a0,a1,0xA //mul p index to get pad struct
+	add	a0,a0,t4
+	move	t3,a0
+	beq	a2,zero,return_0
+	lw	a0,-0x4850(a0) //button addr
+	move	a2,t3
+	addiu	a2,a2,-0x47C4
+	lw	v0,0x84(a2)
+	jr	ra
+	or	v0,a0,v0 //analog direction (digital) mask?
+
+return_0:
+
+	move	v0,a0
+	jr	ra
+	nop	
+
+og_function_0:
+
+	j	0x088E94D4
+	nop
+
+//
+fnc_btn_4854:
+	//a0 = whatever it was originally
+	//a1 = player index
+	//a2 = not an input
+	andi	a2,a0,0xFF
+	beq	a1,zero,og_function_1
+	nop
+	lui	t5,0x830
+	addi	t4,t5,0x3864
+	sll	a0,a1,0xA //mul p index to get pad struct
+	add	a0,a0,t4
+	move	t3,a0
+	beq	a2,zero,return_1
+	lw	a0,-0x4854(a0) //button addr
+	move	a2,t3
+	addiu	a2,a2,-0x47C4
+	lw	v0,0x84(a2)
+	jr	ra
+	or	v0,a0,v0 //analog direction (digital) mask?
+
+return_1:
+
+	move	v0,a0
+	jr	ra
+	nop	
+
+og_function_1:
+
+	j	 0x088E94A4
+	nop
+	
+//
+fnc_btn_484C:
+	//a0 = whatever it was originally
+	//a1 = player index
+	//a2 = not an input
+	andi	a2,a0,0xFF
+	beq	a1,zero,og_function_2
+	nop
+	lui	t5,0x830
+	addi	t4,t5,0x3864
+	sll	a0,a1,0xA //mul p index to get pad struct
+	add	a0,a0,t4
+	move	t3,a0
+	beq	a2,zero,return_2
+	lw	a0,-0x484C(a0) //button addr
+	move	a2,t3
+	addiu	a2,a2,-0x47C4
+	lw	v0,0x84(a2)
+	jr	ra
+	or	v0,a0,v0 //analog direction (digital) mask?
+
+return_2:
+
+	move	v0,a0
+	jr	ra
+	nop	
+
+og_function_2:
+
+	j	 0x088E9504
+	nop
+
+//
+fnc_btn_4848:
+	//a0 = whatever it was originally
+	//a1 = player index
+	//a2 = not an input
+	andi	a2,a0,0xFF
+	beq	a1,zero,og_function_3
+	nop
+	lui	t5,0x830
+	addi	t4,t5,0x3864
+	sll	a0,a1,0xA //mul p index to get pad struct
+	add	a0,a0,t4
+	move	t3,a0
+	beq	a2,zero,return_3
+	lw	a0,-0x4848(a0) //button addr
+	move	a2,t3
+	addiu	a2,a2,-0x47C4
+	lw	v0,0x84(a2)
+	jr	ra
+	or	v0,a0,v0 //analog direction (digital) mask?
+
+return_3:
+
+	move	v0,a0
+	jr	ra
+	nop	
+
+og_function_3:
+
+	j	 0x088E9534
+	nop
