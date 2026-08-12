@@ -218,53 +218,26 @@ patch=0,EE,00081640,word,0802059A
 
 
 
-//60fps patch below
-//i dont think its possible to actually maintain 60fps, so its probably best to simply delete this patch
+//p2 R1 target-menu fix (by casino3346)
+//the R1 target-menu handler (0x2d3680) reads its pad index from a struct
+//field (+0x14) that is hardcoded to 0 (controller 1) by the ctor at 0x2d3560,
+//so p2 could never open the target menu. hook the read at 0x2d3734 and derive
+//the pad index from the character's controlling-player nibble ([char+0xF]>>4,
+//same convention as the co-op patch) instead. p1 is unaffected (nibble 0).
+//uses scratch ram 0x81800+ (above the co-op patch's 0x80FA0-0x816B0 range).
 
-//jump to autodiv function
-patch=0,EE,002e34a0,word,08020558
+//hook: lbu v0,0x14(s4) -> j 0x81800 (delay slot at 0x2d3738 still executes)
+patch=0,EE,002d3734,word,08020600
 
-
-//autodiv function
-patch=0,EE,00081560,word,C4800068
-patch=0,EE,00081564,word,3C023F00
-patch=0,EE,00081568,word,44826800
-patch=0,EE,0008156c,word,460D0002
-patch=0,EE,00081570,word,080B8D29
-
-
-
-//fuck these
-//halve battle speed multi
-//patch=0,EE,00358410,word,3C023F00
-
-//result screen
-//patch=0,EE,00381E60,word,3C023F00
-
-
-
-
-//check btl status and switch fps dynamically
-
-//jump to function
-patch=0,EE,01393f4,word,08020540
-
-
-patch=0,EE,0081500,word,9383848C
-patch=0,EE,0081504,word,240C4970
-patch=0,EE,0081508,word,240D0100
-patch=0,EE,008150c,word,018D0018
-patch=0,EE,0081510,word,00006012
-patch=0,EE,0081514,word,218C0078
-patch=0,EE,0081518,word,00000000
-patch=0,EE,008151c,word,00000000
-patch=0,EE,0081520,word,8D8C0000
-patch=0,EE,0081524,word,00000000
-patch=0,EE,0081528,word,15800002
-patch=0,EE,008152c,word,00000000
-patch=0,EE,0081530,word,0804E4FE
-patch=0,EE,0081534,word,0804E500
-patch=0,EE,0081538,word,00000000
+//routine: v0 = [s2+0xF]>>4 if < 2 else 0
+patch=0,EE,00081800,word,9242000F
+patch=0,EE,00081804,word,00021102
+patch=0,EE,00081808,word,2C4D0002
+patch=0,EE,0008180c,word,15A00002
+patch=0,EE,00081810,word,00000000
+patch=0,EE,00081814,word,00001021
+patch=0,EE,00081818,word,080B4DCF
+patch=0,EE,0008181c,word,00000000
 
 
 
