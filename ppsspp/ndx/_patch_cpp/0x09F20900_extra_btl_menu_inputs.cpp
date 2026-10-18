@@ -5,8 +5,12 @@
 extern "C" void pos_0x09F10800(unsigned int pID); //cycle ctrl mode
 extern "C" void pos_08820FA4(uintptr_t MainPtr); //cycle control chars
 
-extern "C" unsigned int  get_btn_0x4850(unsigned int mask, unsigned int index); //0x09F20700 fnc
+extern "C" unsigned int  pos_0x09F20700(unsigned int mask, unsigned int index); //0x09F20700 fnc
 extern "C" void* z_un_09F00D00(int index); // get_char_by_index
+
+#define cycle_ctrl_mode pos_0x09F10800;
+#define cycle_ctrl_character pos_08820FA4;
+#define get_btn_0x4850 0x09F20700;
 
 void btl_menu_extra_input_checks()
 {
@@ -31,7 +35,7 @@ void btl_menu_extra_input_checks()
         //char cycle
         if( (bMask&lButtonBind)!=0 )
         {
-            pos_08820FA4(i);
+            cycle_ctrl_character(i);
         }
 
         //past this point - everyone EXCEPT menu host
@@ -41,7 +45,7 @@ void btl_menu_extra_input_checks()
         //mode change
         if( (bMask&selButtonBind)!=0 )
         {
-            pos_0x09F10800(i);
+            cycle_ctrl_mode(i);
         }
     }
 }

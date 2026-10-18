@@ -91,7 +91,7 @@ test:
 
 mimic_ctrl:
 
-	jal	z_un_088674c8
+	jal	z_un_088674c8 //mimic input update
 	move	a0,s0
 	
 bnel v0,zero,continue
